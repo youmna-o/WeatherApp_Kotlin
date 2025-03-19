@@ -2,7 +2,7 @@ package com.example.weatherapp.ui
 import com.google.gson.annotations.SerializedName
 
 
-data class ExampleJson2KtKotlin (
+data class WeatherData (
 
     @SerializedName("coord"      ) var coord      : Coord?             = Coord(),
     @SerializedName("weather"    ) var weather    : ArrayList<Weather> = arrayListOf(),
