@@ -73,4 +73,6 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     //Coroutine
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    //lotti
+    implementation ("com.airbnb.android:lottie-compose:6.1.0")
 }
