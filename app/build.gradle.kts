@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
 }
 
 android {
@@ -57,4 +58,19 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.google.code.gson:gson:2.9.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
+
+    val room_version = "2.6.1"
+    implementation ("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
+
+    //ViewModel & livedata
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    //Coroutine
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 }
