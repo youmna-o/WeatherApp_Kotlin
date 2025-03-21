@@ -5,11 +5,19 @@ import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 
 class Repo ( private val remoteDataSource: WeatherRemoteDataSource){
-    suspend fun getCurrentWeather():WeatherData{
-        return remoteDataSource.getCurrentWeather()
+    suspend fun getCurrentWeather(isOnline:Boolean):WeatherData{
+        return if(isOnline)
+            remoteDataSource.getCurrentWeather()
+        else{
+            remoteDataSource.getCurrentWeather()
+        }
     }
-    suspend fun getForecast():ForecastData{
-        return remoteDataSource.getForecast()
+    suspend fun getForecast(isOnline:Boolean):ForecastData {
+        return if (isOnline)
+            remoteDataSource.getForecast()
+        else {
+            remoteDataSource.getForecast()
+        }
     }
     companion object{
         @Volatile
