@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -51,6 +52,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherapp.R
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.model.forecastList
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -72,9 +74,10 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
         Column(
             modifier = Modifier.padding(all = 16.dp)
         ) {
-            ToDayWeatherCard("${weatherData.weather[0].description}", "${weatherData.main?.temp}", R.drawable.baseline_cloudy_snowing_24)
+            ToDayWeatherCard("${weatherData.name}", { BigIcon("${weatherData.weather[0].icon}") },
+                "${getCurrentDateTime()}", temp =TempFromKToC(weatherData.main?.temp), description ="${weatherData.weather[0].description}" )
             Spacer(modifier = Modifier.height(16.dp))
-            ToDayDetailsCard("gg", "${weatherData.main?.humidity}", R.drawable.baseline_cloudy_snowing_24)
+            ToDayDetailsCard(weatherData.main?.pressure, weatherData.main?.humidity, allClouds = weatherData.clouds?.all, speed = weatherData.wind?.speed )
 
             Spacer(modifier = Modifier.height(20.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -85,26 +88,26 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
                         icon = { MediumIcon("${item.weather[0].icon}") },
                         temp = TempFromKToC(item.main?.temp),
 
-
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .clickable() {
-                        showBottomSheet.value = true
+                Card(
 
-                    }
-                    .clip(RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.3f)
-                )){
-                    Text(text = "clicK")
-                }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .clickable() {
+                            showBottomSheet.value = true
+                        }
+                        .clip(RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.3f)
+                    )){
+                    Text(text = "Show The Next Days Forecast", fontSize = 24.sp,textAlign=TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp))
+
+            }
 
         }
         if (showBottomSheet.value) {
@@ -113,8 +116,9 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ToDayWeatherCard(label: String, value: String, icon: Int) {
+fun ToDayWeatherCard( city: String,icon :@Composable  ()-> Unit, date:String,temp:Int,description:String,) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,34 +131,46 @@ fun ToDayWeatherCard(label: String, value: String, icon: Int) {
         ),
 
         ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp)
-            )
+        Row ( modifier = Modifier.padding(16.dp).padding(top = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            ){
+            Column {
+                Text(
+                    text = city,
+                    fontSize = 28.sp,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                icon()
+            }
             Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = label,
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = value,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+            Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+                Text(
+                    text = getDayDate(date) ,
+                    fontSize = 20.sp,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = temp.toString()+ "C",
+                    fontSize = 40.sp,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = description,
+                    fontSize = 20.sp,
+                    color = Color.Black
+                )
+
+            }
+
         }
+
     }
 }
 @Composable
-fun ToDayDetailsCard(label: String, value: String, icon: Int) {
+fun ToDayDetailsCard(pressure  : Int?, humidity  : Int?,allClouds : Int? ,speed:Double? ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,25 +185,31 @@ fun ToDayDetailsCard(label: String, value: String, icon: Int) {
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text ="pressure"+ pressure.toString()+"hPa",
+                fontSize = 16.sp,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = label,
+                text = "humidity"+humidity.toString()+"%",
                 fontSize = 16.sp,
                 color = Color.Black
             )
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = value,
+                text ="allClouds"+ allClouds.toString()+"%",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "speed"+speed.toString()+"m/s",
+                fontSize = 16.sp,
+                color = Color.Black
+            )
+
         }
     }
 }

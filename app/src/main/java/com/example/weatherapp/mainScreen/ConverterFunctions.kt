@@ -48,6 +48,11 @@ fun getDayDate(dateTime: String): String {
     val formattedDate = nextDay.format(outputFormatter)
     return "$dayAbbreviation, $formattedDate"
 }
+@RequiresApi(Build.VERSION_CODES.O)
+fun getCurrentDateTime(): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+    return LocalDateTime.now().format(formatter)
+}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
