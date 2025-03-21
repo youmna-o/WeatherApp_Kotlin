@@ -1,9 +1,14 @@
 package com.example.weatherapp.mainScreen
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,13 +57,21 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherapp.R
+import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
+import com.example.weatherapp.data.model.forecastList
 import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.DayOfWeek
+import java.util.Locale
 
 class WeatherDetails : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -70,37 +83,32 @@ class WeatherDetails : ComponentActivity() {
                 )
             )
             val viewModel = ViewModelProvider(this, factory).get(WeatherDetailsViewModel::class.java)
-            getWeather(viewModel)
+           // getWeather(viewModel)
+            getWeatherAndForecast(viewModel)
+
         }
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun getWeather(viewModel: WeatherDetailsViewModel){
-    val weatherState = viewModel.weather.observeAsState(initial = null)
+private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
+    val weatherState = viewModel.weather.observeAsState()
+    val foreCastState = viewModel.forecast.observeAsState()
+
     LaunchedEffect(Unit) {
         viewModel.getCurrentWeather()
-    }
-    if (weatherState.value != null) {
-        WeatherScreen(weatherState.value!!)
-
-
-    }
-}
-@Composable
-private fun getForecast(viewModel: WeatherDetailsViewModel){
-    val foreCastState = viewModel.forecast.observeAsState()
-    LaunchedEffect(Unit) {
         viewModel.getForecast()
     }
-    if (foreCastState.value != null) {
 
-       // NextDaysWeather(foreCastState.value!!)
-
-
+    if (weatherState.value != null && foreCastState.value != null) {
+        WeatherScreen(weatherState.value!!, foreCastState.value!!.list)
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherScreen(weatherData: WeatherData) {
+fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
     val showBottomSheet = remember { mutableStateOf(false) }
 
     Box(
@@ -118,31 +126,41 @@ fun WeatherScreen(weatherData: WeatherData) {
         Column(
             modifier = Modifier.padding(all = 16.dp)
         ) {
-            ToDayWeatherCard("*************", "${weatherData.visibility}", R.drawable.baseline_cloudy_snowing_24)
+            ToDayWeatherCard("${weatherData.weather[0].description}", "${weatherData.main?.temp}", R.drawable.baseline_cloudy_snowing_24)
             Spacer(modifier = Modifier.height(16.dp))
-            ToDayDetailsCard("gg", "${weatherData.main?.temp}", R.drawable.baseline_cloudy_snowing_24)
+            ToDayDetailsCard("gg", "${weatherData.main?.humidity}", R.drawable.baseline_cloudy_snowing_24)
 
             Spacer(modifier = Modifier.height(20.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(getMockWeatherData()) { weather ->
+                items(forecastData.take(8), key = { it.dtTxt!! }) { item ->
+                    Log.d("ForecastLazyRow", "Time: ${item.dtTxt}, Weather: ${item.weather[0].description}")
                     RestOfDay(
-                        label = weather.day,
-                        value = weather.temperature,
-                        icon = weather.icon
+                        label = "${item.dtTxt}",
+                        value = "${item.weather.joinToString { "${it.description}" }}",
+                        icon = R.drawable.baseline_cloudy_snowing_24
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            Button(
-                onClick = { showBottomSheet.value = true }
-            ) {
-                Text("Display partial bottom sheet")
-            }
-        }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .clickable(){
+                        showBottomSheet.value = true
 
+                    }
+                    .clip(RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.3f)
+                )){
+                    Text(text = "clicK")
+                }
+
+        }
         if (showBottomSheet.value) {
-            PartialBottomSheet(showBottomSheet)
+            PartialBottomSheet(showBottomSheet,forecastData)
         }
     }
 }
@@ -300,8 +318,9 @@ fun WeatherCard(label: String, value: String, icon: Int) {
         }
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NextDaysWeather() {
+fun NextDaysWeather(forecastList: List<forecastList>) {
     Column {
         Text(
             text = "Next 7 Days",
@@ -310,33 +329,24 @@ fun NextDaysWeather() {
             color = Color.Black
         )
         LazyColumn {
-            items(getMockWeatherData()) { weather ->
+            items(listOf(8,16,24,32).mapNotNull {
+                    index -> forecastList.getOrNull(index)
+            }) { weather ->
                 WeatherCard(
-                    label = weather.day,
-                    value = weather.temperature,
-                    icon = weather.icon
+                    label = getDayName("${weather.dtTxt}" ),
+                    value = "${weather.main?.temp}",
+                    icon = R.drawable.baseline_cloudy_snowing_24
                 )
             }
         }
     }
 }
-data class WeatherInfo(val day: String, val temperature: String, val icon: Int)
 
-fun getMockWeatherData(): List<WeatherInfo> {
-    return listOf(
-        WeatherInfo("Wednesday", "22°C", R.drawable.baseline_cloudy_snowing_24),
-        WeatherInfo("Thursday", "21°C", R.drawable.baseline_cloudy_snowing_24),
-        WeatherInfo("Friday", "24°C", R.drawable.baseline_cloudy_snowing_24),
-        WeatherInfo("Saturday", "18°C", R.drawable.baseline_cloudy_snowing_24),
-        WeatherInfo("Sunday", "12°C", R.drawable.baseline_cloudy_snowing_24),
-        WeatherInfo("Monday", "16°C", R.drawable.baseline_cloudy_snowing_24),
-        WeatherInfo("Tuesday", "18°C", R.drawable.baseline_cloudy_snowing_24),
-    )
-}
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>) {
+fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>,forecastList: List<forecastList>) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     if (showBottomSheet.value) {
@@ -345,9 +355,15 @@ fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>) {
             sheetState = sheetState,
             onDismissRequest = { showBottomSheet.value = false }
         ) {
-            NextDaysWeather()
+            NextDaysWeather(forecastList)
         }
     }
 }
 
-
+@RequiresApi(Build.VERSION_CODES.O)
+fun getDayName(dateString: String?): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+        val outputFormat = SimpleDateFormat("EEEE", Locale.ENGLISH)
+        val date = inputFormat.parse(dateString)
+       return outputFormat.format(date!!)
+}

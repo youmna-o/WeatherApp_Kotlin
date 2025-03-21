@@ -56,9 +56,12 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
         viewModelScope.launch ( Dispatchers.IO){
             try {
                 val  result = repo.getForecast(true)
+               // val forecastList = forecastResponse.list // تحتوي على 40 قيمة
+
                 if (result!=null){
                     val myForecast = result
                     mutableForecast.postValue(myForecast)
+
                 //    Log.i("TAG2", "onCreate: ${weather.value?.weather?.get(0)}")
                 }else{
                     mutableMessage.postValue("faild")
