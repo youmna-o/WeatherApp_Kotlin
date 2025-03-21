@@ -21,7 +21,6 @@ import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.Weather
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.repo.Repo
-import com.example.weatherapp.mainScreen.ui.theme.WeatherAppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
