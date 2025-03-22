@@ -62,6 +62,7 @@ import androidx.lifecycle.lifecycleScope
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.model.ForecastData
@@ -69,8 +70,8 @@ import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.mainScreen.WeatherDetails
-import com.example.weatherapp.ui.theme.MyAppTheme
 import com.example.weatherapp.ui.theme.Typography
+import com.example.weatherapp.ui.theme.WeatherAppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -85,18 +86,47 @@ class MainActivity : ComponentActivity() {
         //  val remoteDataSource = WeatherRemoteDataSource(RetrofitHeloer.apiService)
         // repo = Repo.getInstance(remoteDataSource)
         setContent {
-     MyAppTheme {
+     WeatherAppTheme {
          val currentContext = LocalContext.current
-         Button({
-             val intent = Intent(currentContext, WeatherDetails()::class.java).apply {}
-             currentContext.startActivity(intent)
-         }) {
-             Text("weatherScreen")
+         Box(
+             modifier = Modifier
+                 .fillMaxSize()
+         ) {
+             //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
+             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.last  ))
+             val progress by animateLottieCompositionAsState(
+                 composition,
+                 iterations = LottieConstants.IterateForever
+             )
+
+             LottieAnimation(
+                 composition = composition,
+                 progress = { progress },
+                 modifier = Modifier.fillMaxSize(),
+                 contentScale = ContentScale.FillBounds
+             )
+         Column {
+             Button({
+                 val intent = Intent(currentContext, WeatherDetails()::class.java).apply {}
+                 currentContext.startActivity(intent)
+             }) {
+                 Text("weatherScreen")
+             }
+             Button({
+                 val intent = Intent(currentContext, WeatherDetails()::class.java).apply {}
+                 currentContext.startActivity(intent)
+             }) {
+                 Text("weatherScreen")
+             }
+         }
          }
 
 
-
      }
+
+
+
+
      }
 
         /* lifecycleScope.launch(Dispatchers.IO) {

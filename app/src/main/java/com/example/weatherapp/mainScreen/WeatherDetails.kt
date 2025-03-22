@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
+import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 class WeatherDetails : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -27,15 +28,17 @@ class WeatherDetails : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val context = LocalContext.current
-            val factory = myFactory(
-                Repo(
-                    WeatherRemoteDataSource(RetrofitHeloer.apiService),
-                )
-            )
-            val viewModel = ViewModelProvider(this, factory).get(WeatherDetailsViewModel::class.java)
-           // getWeather(viewModel)
-            getWeatherAndForecast(viewModel)
+           WeatherAppTheme {
+               val context = LocalContext.current
+               val factory = myFactory(
+                   Repo(
+                       WeatherRemoteDataSource(RetrofitHeloer.apiService),
+                   )
+               )
+               val viewModel = ViewModelProvider(this, factory).get(WeatherDetailsViewModel::class.java)
+               // getWeather(viewModel)
+               getWeatherAndForecast(viewModel)
+           }
 
         }
     }

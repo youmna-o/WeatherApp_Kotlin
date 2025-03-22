@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +65,8 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.backani))
+        //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2))
 
         LottieAnimation(
             composition = composition,
@@ -331,7 +334,7 @@ fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>, forecastList: Lis
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.backani))
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2))
                 LottieAnimation(
                     composition = composition,
                     modifier = Modifier.matchParentSize(),

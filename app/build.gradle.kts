@@ -76,4 +76,6 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
     //lotti
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
+    // splash
+    implementation ("androidx.core:core-splashscreen:1.0.0")
 }
