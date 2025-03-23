@@ -8,6 +8,7 @@ import android.util.Log
 
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherapp.R
 import com.example.weatherapp.data.model.WeatherData
@@ -64,15 +67,23 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-    ) {
+            .background(color = Color.Blue)     ) {
+        Image(painter = painterResource(R.drawable.b1),
+            contentDescription = "nn",Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds)
         //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2))
+       /* val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.back2  ))
+        val progress by animateLottieCompositionAsState(
+            composition,
+            iterations = LottieConstants.IterateForever
+        )
 
         LottieAnimation(
             composition = composition,
+            progress = { progress },
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
+           // contentScale = ContentScale.FillBounds
+        )*/
 
         Column(
             modifier = Modifier.padding(all = 16.dp)

@@ -3,16 +3,17 @@ package com.example.weatherapp.data.repo
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 class Repo ( private val remoteDataSource: WeatherRemoteDataSource){
-    suspend fun getCurrentWeather(isOnline:Boolean):WeatherData{
+    suspend fun getCurrentWeather(isOnline:Boolean): Flow<WeatherData> {
         return if(isOnline)
             remoteDataSource.getCurrentWeather()
         else{
             remoteDataSource.getCurrentWeather()
         }
     }
-    suspend fun getForecast(isOnline:Boolean):ForecastData {
+    suspend fun getForecast(isOnline:Boolean):Flow<ForecastData> {
         return if (isOnline)
             remoteDataSource.getForecast()
         else {

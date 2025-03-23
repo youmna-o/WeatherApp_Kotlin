@@ -23,6 +23,7 @@ import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.repo.Repo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
     private val currentWeather: MutableLiveData<WeatherData> = MutableLiveData()
@@ -36,39 +37,42 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
     fun getCurrentWeather(){
         viewModelScope.launch ( Dispatchers.IO){
             try {
-                val  result = repo.getCurrentWeather(true)
-                if (result!=null){
-                    val myWeather = result
-                    currentWeather.postValue(myWeather)
-                   // Log.i("TAG2", "onCreate: ${weather.value?.weather?.get(0)}")
-                }else{
-                    mutableMessage.postValue("faild")
+                repo.getCurrentWeather(true).collect { List ->
+                    println("Received  products: $List")
+                    currentWeather.postValue(List)
                 }
-
             }catch (ex:Exception){
                 mutableMessage.postValue("An erroe ,${ex.message}")
             }
-
         }
     }
+
     fun getForecast(){
         viewModelScope.launch ( Dispatchers.IO){
             try {
+                repo.getForecast(true).collect { List ->
+                    println("Received  products: $List")
+                    withContext(Dispatchers.Main) {
+                        mutableForecast.postValue(List)
+                    }
+                }
+            }catch (ex:Exception){
+                mutableMessage.postValue("An erroe ,${ex.message}")
+            }
+           /* try {
                 val  result = repo.getForecast(true)
-               // val forecastList = forecastResponse.list // تحتوي على 40 قيمة
 
                 if (result!=null){
                     val myForecast = result
                     mutableForecast.postValue(myForecast)
 
-                //    Log.i("TAG2", "onCreate: ${weather.value?.weather?.get(0)}")
                 }else{
                     mutableMessage.postValue("faild")
                 }
 
             }catch (ex:Exception){
                 mutableMessage.postValue("An erroe ,${ex.message}")
-            }
+            }*/
 
         }
     }

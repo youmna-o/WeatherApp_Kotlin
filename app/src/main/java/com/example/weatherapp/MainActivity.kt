@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
                  .fillMaxSize()
          ) {
              //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
-             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.last  ))
+             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2  ))
              val progress by animateLottieCompositionAsState(
                  composition,
                  iterations = LottieConstants.IterateForever
