@@ -1,4 +1,4 @@
-package com.example.weatherapp.mainScreen
+package com.example.weatherapp.weatherScreen
 
 import android.annotation.SuppressLint
 import android.os.Build

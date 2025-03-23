@@ -1,85 +1,66 @@
 package com.example.weatherapp
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.telecom.Call.Details
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 
 import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
-import androidx.compose.material3.rememberModalBottomSheetState
-
 import androidx.compose.runtime.Composable
+
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
-import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
-import com.example.weatherapp.mainScreen.WeatherDetails
-import com.example.weatherapp.ui.theme.Typography
+import com.example.weatherapp.favorite.FavouritScreen
+import com.example.weatherapp.mainActivity.NavigationItem
+import com.example.weatherapp.mainActivity.Screen
+import com.example.weatherapp.map.MapScreen
+import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.ui.theme.WeatherAppTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
+import com.example.weatherapp.weatherScreen.WeatherScreen
 
 
 class MainActivity : ComponentActivity() {
     private lateinit var currentWeather: MutableState<WeatherData>
     private lateinit var foreCast: MutableState<ForecastData>
     private lateinit var repo: Repo
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -105,7 +86,7 @@ class MainActivity : ComponentActivity() {
                  modifier = Modifier.fillMaxSize(),
                  contentScale = ContentScale.FillBounds
              )
-         Column {
+        /* Column {
              Button({
                  val intent = Intent(currentContext, WeatherDetails()::class.java).apply {}
                  currentContext.startActivity(intent)
@@ -118,14 +99,76 @@ class MainActivity : ComponentActivity() {
              }) {
                  Text("weatherScreen")
              }
+         }*/
          }
-         }
-
+         ShowNavBar(this)
 
      }
-            
+
      }
 
 
+    }
+
+}
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ShowNavBar(activity: ComponentActivity) {
+    val navController = rememberNavController()
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Weather.rout,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Map.rout) { MapScreen() }
+            composable(Screen.Weather.rout) { WeatherDetailsScreen(activity) }
+            composable(Screen.Favourite.rout) { FavouritScreen() }
+            composable(Screen.Notification.rout) { NotificationScreen() }
+        }
+    }
+}
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    val navigationItems = listOf(
+        NavigationItem("Weather", Icons.Default.Home, Screen.Weather.rout),
+        NavigationItem("Favourite", Icons.Default.Person, Screen.Favourite.rout),
+        NavigationItem("Map", Icons.Default.ShoppingCart, Screen.Map.rout),
+        NavigationItem("Notification", Icons.Default.Settings, Screen.Notification.rout)
+    )
+
+    NavigationBar(
+        containerColor = Color.White
+    ) {
+        val selectedNavigationIndex = rememberSaveable { mutableIntStateOf(0) }
+        navigationItems.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = selectedNavigationIndex.intValue == index,
+                onClick = {
+                    selectedNavigationIndex.intValue = index
+                    navController.navigate(item.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                label = {
+                    Text(
+                        item.title,
+                        color = if (index == selectedNavigationIndex.intValue)
+                            Color.Black
+                        else Color.Gray
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.surface,
+                    indicatorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
     }
 }

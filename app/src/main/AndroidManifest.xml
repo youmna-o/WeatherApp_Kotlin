@@ -16,12 +16,32 @@
         android:theme="@style/Theme.WeatherApp"
         tools:targetApi="31">
         <activity
-            android:name=".mainScreen.WeatherDetailsViewModel"
+            android:name=".notifications.Notification"
+            android:exported="false"
+            android:label="@string/title_activity_notification"
+            android:theme="@style/Theme.WeatherApp" />
+        <activity
+            android:name=".map.Map"
+            android:exported="false"
+            android:label="@string/title_activity_map"
+            android:theme="@style/Theme.WeatherApp" />
+        <activity
+            android:name=".favorite.Favourit"
+            android:exported="false"
+            android:label="@string/title_activity_favourit"
+            android:theme="@style/Theme.WeatherApp" />
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/Theme.WeatherApp" />
+        <activity
+            android:name=".weatherScreen.WeatherDetailsViewModel"
             android:exported="false"
             android:label="@string/title_activity_weather_details_view_model"
             android:theme="@style/Theme.WeatherApp" />
         <activity
-            android:name=".mainScreen.WeatherDetails"
+            android:name=".weatherScreen.WeatherDetails"
             android:exported="false"
             android:label="@string/title_activity_weather_details"
             android:theme="@style/Theme.WeatherApp" />

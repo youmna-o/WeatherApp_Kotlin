@@ -78,4 +78,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
     // splash
     implementation ("androidx.core:core-splashscreen:1.0.0")
+    //nav
+    val nav_version = "2.8.8"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 }
