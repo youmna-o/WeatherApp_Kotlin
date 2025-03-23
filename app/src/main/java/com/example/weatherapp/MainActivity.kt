@@ -123,20 +123,9 @@ class MainActivity : ComponentActivity() {
 
 
      }
-
-
-
-
+            
      }
 
-        /* lifecycleScope.launch(Dispatchers.IO) {
-                val weather = repo.getCurrentWeather(true).main
-            Log.i("TAG2", "onCreate: ${weather}")
-        }
-        lifecycleScope.launch(Dispatchers.IO) {
-            val forecast = repo.getForecast().list[5]
-            Log.i("TAG", "onCreate: ${forecast}")
-        }*/
 
     }
 }

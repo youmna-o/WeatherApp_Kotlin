@@ -20,59 +20,51 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.Weather
 import com.example.weatherapp.data.model.WeatherData
+import com.example.weatherapp.data.remote.Response
 import com.example.weatherapp.data.repo.Repo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
-    private val currentWeather: MutableLiveData<WeatherData> = MutableLiveData()
-    val weather: LiveData<WeatherData> = currentWeather
-    private val mutableForecast: MutableLiveData<ForecastData> = MutableLiveData()
-    val forecast: LiveData<ForecastData> = mutableForecast
+
+
+    private val currentWeather: MutableStateFlow<Response<WeatherData>> = MutableStateFlow(Response.Loading())
+    val weather: StateFlow<Response<WeatherData>> = currentWeather.asStateFlow()
+    private val mutableForecast: MutableStateFlow<Response<ForecastData>> = MutableStateFlow(Response.Loading())
+    val forecast: StateFlow<Response<ForecastData>> = mutableForecast.asStateFlow()
 
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
     fun getCurrentWeather(){
         viewModelScope.launch ( Dispatchers.IO){
-            try {
-                repo.getCurrentWeather(true).collect { List ->
-                    println("Received  products: $List")
-                    currentWeather.postValue(List)
+
+                repo.getCurrentWeather(true) .catch { ex ->
+                    currentWeather.value = Response.Failure(ex)
                 }
-            }catch (ex:Exception){
-                mutableMessage.postValue("An erroe ,${ex.message}")
-            }
+                    .collect { list ->
+                        currentWeather.value = Response.Success(list)
+                    }
+
+                }
+
         }
-    }
+
 
     fun getForecast(){
         viewModelScope.launch ( Dispatchers.IO){
-            try {
-                repo.getForecast(true).collect { List ->
-                    println("Received  products: $List")
-                    withContext(Dispatchers.Main) {
-                        mutableForecast.postValue(List)
-                    }
+            repo.getForecast(true)
+                .catch { ex ->
+                    mutableForecast.value = Response.Failure(ex)
                 }
-            }catch (ex:Exception){
-                mutableMessage.postValue("An erroe ,${ex.message}")
-            }
-           /* try {
-                val  result = repo.getForecast(true)
-
-                if (result!=null){
-                    val myForecast = result
-                    mutableForecast.postValue(myForecast)
-
-                }else{
-                    mutableMessage.postValue("faild")
+                .collect { list ->
+                    mutableForecast.value = Response.Success(list)
                 }
-
-            }catch (ex:Exception){
-                mutableMessage.postValue("An erroe ,${ex.message}")
-            }*/
 
         }
     }

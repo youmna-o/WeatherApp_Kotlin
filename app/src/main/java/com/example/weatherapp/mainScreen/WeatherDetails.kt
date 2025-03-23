@@ -7,15 +7,32 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.weatherapp.data.model.ForecastData
+import com.example.weatherapp.data.model.WeatherData
+import com.example.weatherapp.data.remote.Response
 
 import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
@@ -36,7 +53,6 @@ class WeatherDetails : ComponentActivity() {
                    )
                )
                val viewModel = ViewModelProvider(this, factory).get(WeatherDetailsViewModel::class.java)
-               // getWeather(viewModel)
                getWeatherAndForecast(viewModel)
            }
 
@@ -47,16 +63,34 @@ class WeatherDetails : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
-    val weatherState = viewModel.weather.observeAsState()
-    val foreCastState = viewModel.forecast.observeAsState()
+    val weatherState by viewModel.weather.collectAsStateWithLifecycle()
+    val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.getCurrentWeather()
         viewModel.getForecast()
     }
+    when (weatherState) {
+        is Response.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
 
-    if (weatherState.value != null && foreCastState.value != null) {
-        WeatherScreen(weatherState.value!!, foreCastState.value!!.list)
+        is Response.Success -> {
+            val weather = (weatherState as Response.Success<WeatherData>).data
+            val forecast = (foreCastState as? Response.Success<ForecastData>)?.data
+
+            WeatherScreen(weather, forecast?.list ?: emptyList())
+        }
+
+        is Response.Failure -> {
+            val errorMessage = (weatherState as Response.Failure).error.message
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Error: $errorMessage", color = Color.Red)
+            }
+        }
+
     }
 }
 
