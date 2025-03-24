@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class Repo ( private val remoteDataSource: WeatherRemoteDataSource){
     suspend fun getCurrentWeather(isOnline:Boolean): Flow<WeatherData> {
         return if(isOnline)
-            remoteDataSource.getCurrentWeather()
+            remoteDataSource.getCurrentWeather(city="Mansourah", unit = "metric")
         else{
             remoteDataSource.getCurrentWeather()
         }

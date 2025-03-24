@@ -6,12 +6,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -32,11 +35,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -51,6 +57,7 @@ import com.example.weatherapp.mainActivity.NavigationItem
 import com.example.weatherapp.mainActivity.Screen
 import com.example.weatherapp.map.MapScreen
 import com.example.weatherapp.notifications.NotificationScreen
+import com.example.weatherapp.settings.Settings
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
 import com.example.weatherapp.weatherScreen.WeatherScreen
@@ -125,7 +132,7 @@ fun ShowNavBar(activity: ComponentActivity) {
             startDestination = Screen.Weather.rout,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Map.rout) { MapScreen() }
+            composable(Screen.Settings.rout) { Settings() }
             composable(Screen.Weather.rout) { WeatherDetailsScreen(activity) }
             composable(Screen.Favourite.rout) { FavouritScreen() }
             composable(Screen.Notification.rout) { NotificationScreen() }
@@ -135,38 +142,48 @@ fun ShowNavBar(activity: ComponentActivity) {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val navigationItems = listOf(
-        NavigationItem("Weather", Icons.Default.Home, Screen.Weather.rout),
-        NavigationItem("Favourite", Icons.Default.Person, Screen.Favourite.rout),
-        NavigationItem("Map", Icons.Default.ShoppingCart, Screen.Map.rout),
-        NavigationItem("Notification", Icons.Default.Settings, Screen.Notification.rout)
+        NavigationItem("Weather", R.drawable.partly_cloudy_day_24dp_5f6368_fill0_wght400_grad0_opsz24, Screen.Weather.rout),
+        NavigationItem("Settings", Icons.Default.Settings, Screen.Settings.rout),
+        NavigationItem("Favourite", Icons.Default.Favorite, Screen.Favourite.rout),
+        NavigationItem("Notification", Icons.Default.Notifications, Screen.Notification.rout)
     )
+
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
     NavigationBar(
         containerColor = Color.White
     ) {
-        val selectedNavigationIndex = rememberSaveable { mutableIntStateOf(0) }
-        navigationItems.forEachIndexed { index, item ->
+        navigationItems.forEach { item ->
+            val isSelected = currentDestination == item.route
+
             NavigationBarItem(
-                selected = selectedNavigationIndex.intValue == index,
+                selected = isSelected,
                 onClick = {
-                    selectedNavigationIndex.intValue = index
-                    navController.navigate(item.route) {
-                        launchSingleTop = true
-                        restoreState = true
+                    if (!isSelected) { // تجنب التنقل إذا كان العنصر نفسه
+                        navController.navigate(item.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                icon = {
+                    when (item.icon) {
+                        is Int -> Image(
+                            painter = painterResource(id = item.icon),
+                            contentDescription = item.title
+                        )
+                        is ImageVector -> Icon(item.icon, contentDescription = item.title)
+                    }
+                },
                 label = {
                     Text(
                         item.title,
-                        color = if (index == selectedNavigationIndex.intValue)
-                            Color.Black
-                        else Color.Gray
+                        color = if (isSelected) Color.Black else Color.Gray
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.surface,
-                    indicatorColor = MaterialTheme.colorScheme.primary
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
         }

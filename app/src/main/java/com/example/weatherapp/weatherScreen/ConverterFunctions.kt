@@ -105,6 +105,7 @@ fun BigIcon(iconCode: String) {
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun TempFromKToC(k: Double?):Int{
-  var c =  k!!-273.15
+    var c =  k!!
+  //var c =  k!!-273.15
     return c.toInt()
 }
