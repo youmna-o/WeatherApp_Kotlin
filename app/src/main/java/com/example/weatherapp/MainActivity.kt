@@ -2,6 +2,7 @@ package com.example.weatherapp
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.audiofx.BassBoost
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -41,6 +42,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,6 +55,8 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
+import com.example.weatherapp.data.remote.RetrofitHeloer
+import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.favorite.FavouritScreen
 import com.example.weatherapp.mainActivity.NavigationItem
@@ -62,7 +66,9 @@ import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.settings.Settings
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
+import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.example.weatherapp.weatherScreen.WeatherScreen
+import com.example.weatherapp.weatherScreen.myFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -125,6 +131,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShowNavBar(activity: ComponentActivity) {
     val navController = rememberNavController()
+    val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService)))
+    val viewModel: WeatherDetailsViewModel = ViewModelProvider(activity, factory)
+        .get(WeatherDetailsViewModel::class.java)
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -146,8 +155,8 @@ fun ShowNavBar(activity: ComponentActivity) {
                     startDestination = Screen.Settings.rout,
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable(Screen.Settings.rout) { Settings() }
-                    composable(Screen.Weather.rout) { WeatherDetailsScreen(activity) }
+                    composable(Screen.Settings.rout) { Settings(viewModel) }
+                    composable(Screen.Weather.rout) { WeatherDetailsScreen(activity,viewModel) }
                     composable(Screen.Favourite.rout) { FavouritScreen() }
                     composable(Screen.Notification.rout) { NotificationScreen() }
                 }

@@ -36,16 +36,10 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherDetailsScreen(activity: ComponentActivity){
+fun WeatherDetailsScreen(activity: ComponentActivity,viewModel: WeatherDetailsViewModel){
     WeatherAppTheme {
         val context = LocalContext.current
-        val factory = myFactory(
-            Repo(
-                WeatherRemoteDataSource(RetrofitHeloer.apiService),
-            )
-        )
-        val viewModel = ViewModelProvider(activity, factory).get(WeatherDetailsViewModel::class.java)
-        getWeatherAndForecast(viewModel)
+     getWeatherAndForecast(viewModel)
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
@@ -53,9 +47,12 @@ fun WeatherDetailsScreen(activity: ComponentActivity){
 private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
     val weatherState by viewModel.weather.collectAsStateWithLifecycle()
     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
+    val cityState by viewModel.city.collectAsStateWithLifecycle()
+    val langState by viewModel.lang.collectAsStateWithLifecycle()
+    val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentWeather("Mansourah","metric")
+        viewModel.getCurrentWeather(cityState,langState,unitState)
         viewModel.getForecast()
     }
     when (weatherState) {

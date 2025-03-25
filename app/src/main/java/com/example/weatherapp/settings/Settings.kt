@@ -18,8 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,28 +29,45 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
 
 @Composable
-fun Settings(){
+fun Settings(viewModel: WeatherDetailsViewModel){
+    val cityState by viewModel.city.collectAsStateWithLifecycle()
+    val langState by viewModel.lang.collectAsStateWithLifecycle()
+    val selectedTemperature by viewModel.temp.collectAsStateWithLifecycle()
+    val selectedWind by viewModel.wind.collectAsStateWithLifecycle()
+    val unitState by viewModel.unit.collectAsStateWithLifecycle()
+
     val locationOptions = listOf("GPS", "Map")
     val lableLocation="Location"
-    val languageOptions = listOf("English", "Arabic")
+    val languageOptions = listOf("en", "ar")
     val lableLanguage="Language"
     val windOptions = listOf("meter/sec", "mile/h")
     val lableWind="Wind Speed"
     val temperatureOptions= listOf("Celsius","kelvin", "Fahrenheit")
     val lableTemperature="Temperature"
+
     Column (modifier = Modifier.fillMaxSize()){
-        MenueCard(locationOptions,lableLocation,140)
-        MenueCard(languageOptions,lableLanguage,140)
-        MenueCard(windOptions,lableWind,140)
-        MenueCard(temperatureOptions,lableTemperature,180)
+        MenueCard(locationOptions,lableLocation,140,{
+           // viewModel.updateParameters(cityState,langState,unit)
+        })
+        MenueCard(languageOptions,lableLanguage,140,{
+            viewModel.updateParameters(cityState,it,selectedTemperature,selectedWind)
+        })
+        MenueCard(windOptions,lableWind,140,{
+            viewModel.updateParameters(cityState,langState,selectedTemperature,it)
+        })
+        MenueCard(temperatureOptions,lableTemperature,180,{
+            viewModel.updateParameters(cityState,langState,it,selectedWind)
+        })
     }
 
 }
 @Composable
-fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<String>,lable:String) {
+fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
     Column(modifier.selectableGroup()) {
         radioOptions.forEach { text ->
@@ -58,7 +77,8 @@ fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<S
                     .height(48.dp)
                     .selectable(
                         selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) },
+                        onClick = { onOptionSelected(text)
+                                  action(text)},
                         role = Role.RadioButton
                     )
                     .padding(horizontal = 16.dp),
@@ -78,7 +98,7 @@ fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<S
     }
 }
 @Composable
-fun MenueCard(radioOptions:List<String>,lable:String,height:Int){
+fun MenueCard(radioOptions:List<String>,lable:String,height:Int,action: (String) -> Unit ){
     Spacer(modifier = Modifier.height(4.dp))
     Card(
         modifier = Modifier
@@ -91,7 +111,7 @@ fun MenueCard(radioOptions:List<String>,lable:String,height:Int){
         ) {
         Column (){
             Text(lable, fontSize = 28.sp, modifier = Modifier.padding(start = 20.dp))
-            RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable)
+            RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable, action = action)
         }
     }
 }

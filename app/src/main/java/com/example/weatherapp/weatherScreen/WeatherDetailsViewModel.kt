@@ -23,24 +23,43 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
     private val mutableForecast: MutableStateFlow<Response<ForecastData>> = MutableStateFlow(
         Response.Loading())
     val forecast: StateFlow<Response<ForecastData>> = mutableForecast.asStateFlow()
-
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
-    fun getCurrentWeather(city:String,unit:String){
-        viewModelScope.launch ( Dispatchers.IO){
+    private val defLang=MutableStateFlow("en")
+    val lang : StateFlow<String> = defLang.asStateFlow()
+    private val defCity=MutableStateFlow("cairo")
+    val city : StateFlow<String> = defCity.asStateFlow()
+    private val defWind=MutableStateFlow("meter/sec")
+    val wind : StateFlow<String> = defWind.asStateFlow()
+    private val defTemp=MutableStateFlow("Celsius")
+    val temp : StateFlow<String> = defTemp.asStateFlow()
+    private val defUnit=MutableStateFlow("metric")
+    val unit : StateFlow<String> = defUnit.asStateFlow()
 
-                repo.getCurrentWeather(true,city,unit) .catch { ex ->
+    fun updateParameters(newCity:String,newLang:String, newTemp: String, newWind: String){
+        defCity.value=newCity
+        defLang.value=newLang
+        defWind.value=newWind
+        defTemp.value=newTemp
+        defUnit.value = when {
+            newTemp == "Fahrenheit" && newWind == "mile/h" -> "imperial"
+            newTemp == "Celsius" && newWind == "meter/sec" -> "metric"
+            newTemp == "Kelvin" -> ""
+            else -> "Celsius"
+        }
+
+    }
+    fun getCurrentWeather(city:String,lang:String,unit:String){
+        viewModelScope.launch ( Dispatchers.IO){
+                repo.getCurrentWeather(true,city=city,lang=lang,unit=unit) .catch { ex ->
                     currentWeather.value = Response.Failure(ex)
                 }
                     .collect { list ->
                         currentWeather.value = Response.Success(list)
                     }
-
                 }
-
         }
-
 
     fun getForecast(){
         viewModelScope.launch ( Dispatchers.IO){
@@ -55,10 +74,6 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
         }
     }
 
-
-    override fun onCleared() { //when my view die
-        super.onCleared()
-    }
 
 }
 

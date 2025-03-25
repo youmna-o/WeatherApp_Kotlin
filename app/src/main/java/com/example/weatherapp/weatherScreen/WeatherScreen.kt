@@ -83,10 +83,10 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
         ) {
             ToDayWeatherCard("${weatherData.name}", { BigIcon("${weatherData.weather[0].icon}") },
                 "${getCurrentDateTime()}", temp =TempFromKToC(weatherData.main?.temp), description ="${weatherData.weather[0].description}" )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             ToDayDetailsCard(weatherData.main?.pressure, weatherData.main?.humidity, allClouds = weatherData.clouds?.all, speed = weatherData.wind?.speed )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(forecastData.take(8), key = { it.dtTxt!! }) { item ->
                     Log.d("ForecastLazyRow", "Time: ${item.dtTxt}, Weather: ${item.weather[0].description}")
@@ -99,7 +99,7 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
                 Card(
 
                     modifier = Modifier
@@ -181,7 +181,7 @@ fun ToDayDetailsCard(pressure  : Int?, humidity  : Int?,allClouds : Int? ,speed:
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(120.dp)
             .clip(RoundedCornerShape(16.dp)),
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.3f)
@@ -281,7 +281,7 @@ fun WeatherCard(label: String, value: Int?, description: String,icon:@Composable
                 fontSize = 28.sp,
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(40.dp))
            Row {  Text(
                text = value.toString() + "C",
                fontSize = 24.sp,
@@ -338,12 +338,12 @@ fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>, forecastList: Lis
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2))
+             /*   val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2))
                 LottieAnimation(
                     composition = composition,
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.FillBounds
-                )
+                )*/
 
                 NextDaysWeather(forecastList)
             }
