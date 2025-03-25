@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -7,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -118,26 +120,39 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+@SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowNavBar(activity: ComponentActivity) {
     val navController = rememberNavController()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = { BottomNavigationBar(navController) }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Weather.rout,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Settings.rout) { Settings() }
-            composable(Screen.Weather.rout) { WeatherDetailsScreen(activity) }
-            composable(Screen.Favourite.rout) { FavouritScreen() }
-            composable(Screen.Notification.rout) { NotificationScreen() }
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+
+            bottomBar = { BottomNavigationBar(navController) }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Blue)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.b1),
+                    contentDescription = "nn", Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Settings.rout,
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable(Screen.Settings.rout) { Settings() }
+                    composable(Screen.Weather.rout) { WeatherDetailsScreen(activity) }
+                    composable(Screen.Favourite.rout) { FavouritScreen() }
+                    composable(Screen.Notification.rout) { NotificationScreen() }
+                }
+            }
         }
-    }
 }
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -151,7 +166,8 @@ fun BottomNavigationBar(navController: NavController) {
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
     NavigationBar(
-        containerColor = Color.White
+        containerColor = Color(0xFFEB8324).copy(alpha = 0.8f)
+              //  Color.Blue.copy(alpha = 0.3f)
     ) {
         navigationItems.forEach { item ->
             val isSelected = currentDestination == item.route
@@ -159,7 +175,7 @@ fun BottomNavigationBar(navController: NavController) {
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    if (!isSelected) { // تجنب التنقل إذا كان العنصر نفسه
+                    if (!isSelected) {
                         navController.navigate(item.route) {
                             launchSingleTop = true
                             restoreState = true

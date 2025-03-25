@@ -58,12 +58,12 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
     val showBottomSheet = remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
+       /* modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Blue)     ) {
-        Image(painter = painterResource(R.drawable.b1),
+            .background(color = Color.Blue)  */   ) {
+        /*Image(painter = painterResource(R.drawable.b1),
             contentDescription = "nn",Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds)
+            contentScale = ContentScale.FillBounds)*/
         //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
        /* val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.back2  ))
         val progress by animateLottieCompositionAsState(

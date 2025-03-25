@@ -33,27 +33,6 @@ import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 
-/*class WeatherDetails : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-
-          *//* WeatherAppTheme {
-               val context = LocalContext.current
-               val factory = myFactory(
-                   Repo(
-                       WeatherRemoteDataSource(RetrofitHeloer.apiService),
-                   )
-               )
-               val viewModel = ViewModelProvider(this, factory).get(WeatherDetailsViewModel::class.java)
-               getWeatherAndForecast(viewModel)
-           }*//*
-
-        }
-    }
-}*/
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -76,7 +55,7 @@ private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentWeather()
+        viewModel.getCurrentWeather("Mansourah")
         viewModel.getForecast()
     }
     when (weatherState) {
@@ -92,7 +71,6 @@ private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
 
             WeatherScreen(weather, forecast?.list ?: emptyList())
         }
-
         is Response.Failure -> {
             val errorMessage = (weatherState as Response.Failure).error.message
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

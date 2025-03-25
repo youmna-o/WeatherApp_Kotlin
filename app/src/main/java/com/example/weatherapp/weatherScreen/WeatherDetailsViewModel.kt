@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 
 class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
 
-
     private val currentWeather: MutableStateFlow<Response<WeatherData>> = MutableStateFlow(Response.Loading())
     val weather: StateFlow<Response<WeatherData>> = currentWeather.asStateFlow()
     private val mutableForecast: MutableStateFlow<Response<ForecastData>> = MutableStateFlow(
@@ -28,10 +27,10 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
-    fun getCurrentWeather(){
+    fun getCurrentWeather(city:String){
         viewModelScope.launch ( Dispatchers.IO){
 
-                repo.getCurrentWeather(true) .catch { ex ->
+                repo.getCurrentWeather(true,city) .catch { ex ->
                     currentWeather.value = Response.Failure(ex)
                 }
                     .collect { list ->
