@@ -27,10 +27,10 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
-    fun getCurrentWeather(city:String){
+    fun getCurrentWeather(city:String,unit:String){
         viewModelScope.launch ( Dispatchers.IO){
 
-                repo.getCurrentWeather(true,city) .catch { ex ->
+                repo.getCurrentWeather(true,city,unit) .catch { ex ->
                     currentWeather.value = Response.Failure(ex)
                 }
                     .collect { list ->

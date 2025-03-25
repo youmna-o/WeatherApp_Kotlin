@@ -55,7 +55,7 @@ private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentWeather("Mansourah")
+        viewModel.getCurrentWeather("Mansourah","metric")
         viewModel.getForecast()
     }
     when (weatherState) {
