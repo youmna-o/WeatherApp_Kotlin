@@ -58,6 +58,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    //retrofit
     implementation("com.google.code.gson:gson:2.9.0")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
@@ -83,4 +84,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
     //sharedPref
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    //location
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+
 }

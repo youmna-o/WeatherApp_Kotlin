@@ -45,7 +45,7 @@ fun Settings(viewModel: WeatherDetailsViewModel){
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-    val cityState by viewModel.city.collectAsStateWithLifecycle()
+    val locationState by viewModel.locationMethod.collectAsStateWithLifecycle()
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val selectedTemperature by viewModel.temp.collectAsStateWithLifecycle()
     val selectedWind by viewModel.wind.collectAsStateWithLifecycle()
@@ -72,22 +72,24 @@ fun Settings(viewModel: WeatherDetailsViewModel){
 
     Column (modifier = Modifier.fillMaxSize()){
         MenueCard(locationOptions,lableLocation,140,{
-           // viewModel.updateParameters(cityState,langState,unit)
-        },cityState)
+            editor.putString("locationMethod",it)
+            editor.apply()
+            viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
+        },locationState)
         MenueCard(languageOptions,lableLanguage,140,{
             editor.putString("lang",it)
             editor.apply()
-            viewModel.updateParameters(cityState,it,selectedTemperature,selectedWind)
+            viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
         },savedLanguage)
         MenueCard(windOptions,lableWind,140,{
             editor.putString("wind",it)
             editor.apply()
-            viewModel.updateParameters(cityState,langState,selectedTemperature,it)
+            viewModel.updateParameters(locationState,langState,selectedTemperature,it)
         },savedWind)
         MenueCard(temperatureOptions,lableTemperature,180,{
             editor.putString("temp",it)
             editor.apply()
-            viewModel.updateParameters(cityState,langState,it,selectedWind)
+            viewModel.updateParameters(locationState,langState,it,selectedWind)
         },savedTemperature)
        //println(sharedPreferences.getStringSet(selectedTemperature,""))
     }

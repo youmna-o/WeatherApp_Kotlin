@@ -41,13 +41,19 @@ fun WeatherDetailsScreen(activity: ComponentActivity,viewModel: WeatherDetailsVi
 private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
     val weatherState by viewModel.weather.collectAsStateWithLifecycle()
     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
-    val cityState by viewModel.city.collectAsStateWithLifecycle()
+    val latState by viewModel.lat.collectAsStateWithLifecycle()
+    val lonState by viewModel.lon.collectAsStateWithLifecycle()
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentWeather(cityState,langState,unitState)
-        viewModel.getForecast(cityState,langState,unitState)
+       // viewModel.getCurrentWeather(cityState,langState,unitState)
+        //viewModel.getForecast(cityState,langState,unitState)
+      //  =================> when you get lat and long put then like this
+         // viewModel.getForecastByCoord(45.1337,7.367,"en","metric")
+       // viewModel.getCurrentWeatherByCoord(45.1337,7.367,"en","metric")
+        viewModel.getForecastByCoord(latState,lonState,langState,unitState)
+        viewModel.getCurrentWeatherByCoord(latState,lonState,langState,unitState)
     }
     when (weatherState) {
         is Response.Loading -> {
