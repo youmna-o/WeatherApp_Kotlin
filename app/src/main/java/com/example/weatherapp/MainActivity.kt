@@ -66,6 +66,7 @@ import com.example.weatherapp.map.MapScreen
 import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.settings.Settings
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.example.weatherapp.weatherScreen.WeatherScreen
@@ -176,7 +177,7 @@ fun BottomNavigationBar(navController: NavController) {
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
     NavigationBar(
-        containerColor = Color(0xFFEB8324).copy(alpha = 0.8f)
+        containerColor = myOrange
               //  Color.Blue.copy(alpha = 0.3f)
     ) {
         navigationItems.forEach { item ->

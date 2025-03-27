@@ -18,11 +18,12 @@ class WeatherRemoteDataSource(private  val service: WeatherServices,
           emit(response)
         }
 
-       // return service.getWeather("cairo","e13a916deb17bb538fdfabaf0d57e6a5","ar")
     }
-    suspend fun getForecast(): Flow<ForecastData> {
+    suspend fun getForecast(city: String = this.city,
+                            lang: String = this.lang,
+                            unit: String = this.unit): Flow<ForecastData> {
         return flow {
-            val response = service.getForecast("cairo","e13a916deb17bb538fdfabaf0d57e6a5")
+            val response = service.getForecast(city=city,apiKey=apiKey,lang=lang,unit=unit)
             emit(response)
         }
     }

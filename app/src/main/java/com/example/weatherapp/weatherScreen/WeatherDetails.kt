@@ -47,7 +47,7 @@ private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
 
     LaunchedEffect(Unit) {
         viewModel.getCurrentWeather(cityState,langState,unitState)
-        viewModel.getForecast()
+        viewModel.getForecast(cityState,langState,unitState)
     }
     when (weatherState) {
         is Response.Loading -> {

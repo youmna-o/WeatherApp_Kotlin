@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weatherapp.ui.theme.myBlue
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
 
@@ -127,7 +128,7 @@ fun MenueCard(radioOptions:List<String>,lable:String,height:Int,action: (String)
             .height(height.dp)
             .clip(RoundedCornerShape(16.dp)),
              colors = CardDefaults.cardColors(
-            containerColor = Color.Blue.copy(alpha = 0.3f)
+            containerColor = myBlue
         ),
         ) {
         Column (){

@@ -66,9 +66,9 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
                 }
         }
 
-    fun getForecast(){
+    fun getForecast(city:String,lang:String,unit:String){
         viewModelScope.launch ( Dispatchers.IO){
-            repo.getForecast(true)
+            repo.getForecast(true,city=city,lang=lang,unit=unit)
                 .catch { ex ->
                     mutableForecast.value = Response.Failure(ex)
                 }
