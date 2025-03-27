@@ -1,5 +1,6 @@
 package com.example.weatherapp.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -36,10 +37,3 @@ val Typography = Typography(
     )
     */
 )
-@Composable
-fun MyAppTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        typography = Typography,
-        content = content
-    )
-}

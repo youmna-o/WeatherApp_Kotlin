@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">تطبيق الطقس</string>
+    <string name="title_activity_weather_details">تفاصيل الطقس</string>
+    <string name="title_activity_weather_details_view_model">نموذج تفاصيل الطقس</string>
+    <string name="title_activity_main2">النشاط الرئيسي 2</string>
+    <string name="title_activity_favourit">المفضلة</string>
+    <string name="title_activity_map">الخريطة</string>
+    <string name="title_activity_notification">الإشعارات</string>
+    <string name="show_the_next_days_forecast">عرض توقعات الأيام القادمة</string>
+    <string name="c">"س "</string>
+    <string name="speed">السرعة</string>
+    <string name="pressure">الضغط</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="allclouds">جميع السحب</string>
+    <string name="forecast_for_next_days">توقعات الأيام القادمة</string>
+    <string name="location">الموقع</string>
+    <string name="ar">العربية</string>
+    <string name="en">الإنجليزية</string>
+    <string name="language">اللغة</string>
+    <string name="mile_h">ميل/ساعة</string>
+    <string name="meter_sec">متر/ثانية</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="kelvin">كلفن</string>
+    <string name="celsius">درجة مئوية</string>
+    <string name="temperature">درجة الحرارة</string>
+    <string name="lang">اللغة</string>
+    <string name="temp">الحرارة</string>
+    <string name="map">الخريطة</string>
+    <string name="gps">نظام تحديد المواقع</string>
+    <string name="weather">الطقس</string>
+    <string name="settings">الإعدادات</string>
+    <string name="favourite">المفضلة</string>
+    <string name="notification">الإشعارات</string>
+</resources>
