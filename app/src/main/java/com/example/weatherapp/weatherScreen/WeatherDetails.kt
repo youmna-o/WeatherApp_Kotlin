@@ -30,15 +30,15 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherDetailsScreen(activity: ComponentActivity,viewModel: WeatherDetailsViewModel){
+fun WeatherDetailsScreen(activity: ComponentActivity,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double){
     WeatherAppTheme {
         val context = LocalContext.current
-     getWeatherAndForecast(viewModel)
+     getWeatherAndForecast(viewModel,currentLat,currentLon)
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
+private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
     val weatherState by viewModel.weather.collectAsStateWithLifecycle()
     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
     val latState by viewModel.lat.collectAsStateWithLifecycle()
@@ -52,8 +52,11 @@ private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel) {
       //  =================> when you get lat and long put then like this
          // viewModel.getForecastByCoord(45.1337,7.367,"en","metric")
        // viewModel.getCurrentWeatherByCoord(45.1337,7.367,"en","metric")
-        viewModel.getForecastByCoord(latState,lonState,langState,unitState)
-        viewModel.getCurrentWeatherByCoord(latState,lonState,langState,unitState)
+
+       // viewModel.getForecastByCoord(latState,lonState,langState,unitState)
+        //viewModel.getCurrentWeatherByCoord(latState,lonState,langState,unitState)
+        viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
+        viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
     }
     when (weatherState) {
         is Response.Loading -> {

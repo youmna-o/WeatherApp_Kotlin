@@ -30,7 +30,7 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     val message: LiveData<String> =mutableMessage
 
 //show data od dikirnis hard code
-    private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.0797867)
+    private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
     val lat : StateFlow<Double> = defLat.asStateFlow()
     private val defLon=MutableStateFlow(sharedPreferences.getString("lon","31.590905")?.toDouble()?:31.590905)
     val lon: StateFlow<Double> = defLon.asStateFlow()
