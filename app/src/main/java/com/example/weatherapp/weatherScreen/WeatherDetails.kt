@@ -21,16 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.platform.LocalContext
-
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.Response
-
-import com.example.weatherapp.data.remote.RetrofitHeloer
-import com.example.weatherapp.data.remote.WeatherRemoteDataSource
-import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 

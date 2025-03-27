@@ -1,6 +1,7 @@
 package com.example.weatherapp
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Intent
 import android.media.audiofx.BassBoost
 import android.os.Build
@@ -116,7 +117,7 @@ class MainActivity : ComponentActivity() {
              }
          }*/
          }
-         ShowNavBar(this)
+         ShowNavBar(this, application = application)
 
      }
 
@@ -129,9 +130,9 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNavBar(activity: ComponentActivity) {
+fun ShowNavBar(activity: ComponentActivity,application: Application) {
     val navController = rememberNavController()
-    val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService)))
+    val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService)),application)
     val viewModel: WeatherDetailsViewModel = ViewModelProvider(activity, factory)
         .get(WeatherDetailsViewModel::class.java)
 
@@ -152,7 +153,7 @@ fun ShowNavBar(activity: ComponentActivity) {
                 )
                 NavHost(
                     navController = navController,
-                    startDestination = Screen.Settings.rout,
+                    startDestination = Screen.Weather.rout,
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable(Screen.Settings.rout) { Settings(viewModel) }

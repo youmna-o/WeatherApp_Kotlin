@@ -1,5 +1,7 @@
 package com.example.weatherapp.weatherScreen
 
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,7 +18,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
+class WeatherDetailsViewModel(private val repo: Repo,application: Application): ViewModel() {
+    private val sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
     private val currentWeather: MutableStateFlow<Response<WeatherData>> = MutableStateFlow(Response.Loading())
     val weather: StateFlow<Response<WeatherData>> = currentWeather.asStateFlow()
@@ -26,15 +29,15 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
-    private val defLang=MutableStateFlow("en")
+    private val defLang=MutableStateFlow(sharedPreferences.getString("lang","en")?:"en")
     val lang : StateFlow<String> = defLang.asStateFlow()
-    private val defCity=MutableStateFlow("cairo")
+    private val defCity=MutableStateFlow(sharedPreferences.getString("city","cairo")?:"cairo")
     val city : StateFlow<String> = defCity.asStateFlow()
-    private val defWind=MutableStateFlow("meter/sec")
+    private val defWind=MutableStateFlow(sharedPreferences.getString("wind","meter/sec")?:"meter/sec")
     val wind : StateFlow<String> = defWind.asStateFlow()
-    private val defTemp=MutableStateFlow("Celsius")
+    private val defTemp=MutableStateFlow(sharedPreferences.getString("temp","Celsius")?:"Celsius")
     val temp : StateFlow<String> = defTemp.asStateFlow()
-    private val defUnit=MutableStateFlow("metric")
+    private val defUnit=MutableStateFlow(sharedPreferences.getString("unit","metric")?:"metric")
     val unit : StateFlow<String> = defUnit.asStateFlow()
 
     fun updateParameters(newCity:String,newLang:String, newTemp: String, newWind: String){
@@ -48,6 +51,8 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
             newTemp == "Kelvin" -> ""
             else -> "Celsius"
         }
+        var newUnit= defUnit.value
+        sharedPreferences.edit().putString("unit",newUnit).apply()
 
     }
     fun getCurrentWeather(city:String,lang:String,unit:String){
@@ -78,9 +83,9 @@ class WeatherDetailsViewModel(private val repo: Repo): ViewModel() {
 }
 
 
-class myFactory(private val repo: Repo): ViewModelProvider.Factory{
+class myFactory(private val repo: Repo,private val application: Application): ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return WeatherDetailsViewModel(repo) as T
+        return WeatherDetailsViewModel(repo, application = application) as T
 
     }
 }
