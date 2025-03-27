@@ -6,19 +6,13 @@ import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
 class Repo ( private val remoteDataSource: WeatherRemoteDataSource){
-    suspend fun getCurrentWeather(isOnline:Boolean): Flow<WeatherData> {
-        return if(isOnline)
-            remoteDataSource.getCurrentWeather()
-        else{
-            remoteDataSource.getCurrentWeather()
-        }
+    suspend fun getCurrentWeather(isOnline:Boolean, city:String, lang:String,unit:String): Flow<WeatherData> {
+        return remoteDataSource.getCurrentWeather(city=city, lang=lang,unit = unit)
+
     }
-    suspend fun getForecast(isOnline:Boolean):Flow<ForecastData> {
-        return if (isOnline)
-            remoteDataSource.getForecast()
-        else {
-            remoteDataSource.getForecast()
-        }
+    suspend fun getForecast(isOnline:Boolean, city:String, lang:String,unit:String):Flow<ForecastData> {
+        return remoteDataSource.getForecast(city=city, lang=lang,unit = unit)
+
     }
     companion object{
         @Volatile

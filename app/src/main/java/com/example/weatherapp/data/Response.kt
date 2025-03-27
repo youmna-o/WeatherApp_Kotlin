@@ -1,4 +1,4 @@
-package com.example.weatherapp.data.remote
+package com.example.weatherapp.data
 
 sealed class Response<out T> {
     class Loading<T> : Response<T>()
