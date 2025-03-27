@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -102,19 +103,19 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-                Card(
+            Card(
 
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .clickable() {
-                            showBottomSheet.value = true
-                        }
-                        .clip(RoundedCornerShape(16.dp)),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White.copy(alpha = 0.3f)
-                    )){
-                    Text(text = "Show The Next Days Forecast", maxLines = 1, fontSize = 24.sp,textAlign=TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .clickable() {
+                        showBottomSheet.value = true
+                    }
+                    .clip(RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.3f)
+                )){
+                Text(text = stringResource(R.string.show_the_next_days_forecast), maxLines = 1, fontSize = 24.sp,textAlign=TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp))
 
             }
 
@@ -140,7 +141,9 @@ fun ToDayWeatherCard( city: String,icon :@Composable  ()-> Unit, date:String,tem
         ),
 
         ) {
-        Row ( modifier = Modifier.padding(16.dp).padding(top = 24.dp),
+        Row ( modifier = Modifier
+            .padding(16.dp)
+            .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             ){
             Column {
@@ -159,7 +162,7 @@ fun ToDayWeatherCard( city: String,icon :@Composable  ()-> Unit, date:String,tem
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = temp.toString()+ "C",
+                    text = temp.toString()+ stringResource(R.string.c),
                     fontSize = 40.sp,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -190,13 +193,13 @@ fun ToDayDetailsCard(pressure  : Int?, humidity  : Int?,allClouds : Int? ,speed:
             modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            MiniDetailsCard("speed",R.drawable.air_24dp_5f6368_fill0_wght400_grad0_opsz24,speed.toString()+"m/s")
+            MiniDetailsCard(stringResource(R.string.speed),R.drawable.air_24dp_5f6368_fill0_wght400_grad0_opsz24,speed.toString()+"m/s")
             Spacer(modifier = Modifier.width(4.dp))
-            MiniDetailsCard("pressure",R.drawable.tire_repair_24dp_5f6368_fill0_wght400_grad0_opsz24,pressure.toString()+"hPa")
+            MiniDetailsCard(stringResource(R.string.pressure),R.drawable.tire_repair_24dp_5f6368_fill0_wght400_grad0_opsz24,pressure.toString()+"hPa")
             Spacer(modifier = Modifier.width(4.dp))
-            MiniDetailsCard("humidity",R.drawable.humidity_percentage_24dp_5f6368_fill0_wght400_grad0_opsz24,humidity.toString()+"%")
+            MiniDetailsCard(stringResource(R.string.humidity),R.drawable.humidity_percentage_24dp_5f6368_fill0_wght400_grad0_opsz24,humidity.toString()+"%")
             Spacer(modifier = Modifier.width(4.dp))
-            MiniDetailsCard("allClouds",R.drawable.cloud_24dp_5f6368_fill0_wght400_grad0_opsz24,allClouds.toString()+"%")
+            MiniDetailsCard(stringResource(R.string.allclouds),R.drawable.cloud_24dp_5f6368_fill0_wght400_grad0_opsz24,allClouds.toString()+"%")
 
         }
     }
@@ -204,7 +207,7 @@ fun ToDayDetailsCard(pressure  : Int?, humidity  : Int?,allClouds : Int? ,speed:
 @Composable
 fun MiniDetailsCard(text:String,id:Int,value: String){
     Column (Modifier.width(80.dp)){
-        Text(text, maxLines = 1, fontSize = 18.sp,textAlign = TextAlign.Center)
+        Text(text, maxLines = 1, fontSize = 18.sp,textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         Image(painter = painterResource(id), contentDescription = "",Modifier.fillMaxWidth())
         Text(value, maxLines = 1, fontSize = 18.sp,textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
     }
@@ -230,7 +233,7 @@ fun RestOfDay(hour : String, icon:@Composable () -> Unit,temp:Int) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = " at "+ getHourFromDateTime(hour)+":00",
+                text =  getHourFromDateTime(hour)+":00",
                 fontSize = 16.sp,
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -239,7 +242,7 @@ fun RestOfDay(hour : String, icon:@Composable () -> Unit,temp:Int) {
             Spacer(modifier = Modifier.width(8.dp))
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "${temp} C",
+                text = "${temp} ${stringResource(R.string.c)}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -290,7 +293,7 @@ fun WeatherCard(label: String, value: Int?, description: String,icon:@Composable
 fun NextDaysWeather(forecastList: List<forecastList>) {
     Column {
         Text(
-            text = "Forecast For Next Days",
+            text = stringResource(R.string.forecast_for_next_days),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
         )
@@ -324,7 +327,8 @@ fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>, forecastList: Lis
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize().background(myBlue)
+                    .fillMaxSize()
+                    .background(myBlue)
             ) {
              /*   val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2))
                 LottieAnimation(

@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -168,10 +169,10 @@ fun ShowNavBar(activity: ComponentActivity,application: Application) {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val navigationItems = listOf(
-        NavigationItem("Weather", R.drawable.partly_cloudy_day_24dp_5f6368_fill0_wght400_grad0_opsz24, Screen.Weather.rout),
-        NavigationItem("Settings", Icons.Default.Settings, Screen.Settings.rout),
-        NavigationItem("Favourite", Icons.Default.Favorite, Screen.Favourite.rout),
-        NavigationItem("Notification", Icons.Default.Notifications, Screen.Notification.rout)
+        NavigationItem(stringResource(R.string.weather), R.drawable.partly_cloudy_day_24dp_5f6368_fill0_wght400_grad0_opsz24, Screen.Weather.rout),
+        NavigationItem(stringResource(R.string.settings), Icons.Default.Settings, Screen.Settings.rout),
+        NavigationItem(stringResource(R.string.favourite), Icons.Default.Favorite, Screen.Favourite.rout),
+        NavigationItem(stringResource(R.string.notification), Icons.Default.Notifications, Screen.Notification.rout)
     )
 
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route

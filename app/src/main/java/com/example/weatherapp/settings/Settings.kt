@@ -27,11 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.myBlue
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
@@ -49,19 +51,24 @@ fun Settings(viewModel: WeatherDetailsViewModel){
     val selectedWind by viewModel.wind.collectAsStateWithLifecycle()
     val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
-    val savedLanguage = sharedPreferences.getString("lang", "en")?:"en"
-    val savedTemperature = sharedPreferences.getString("temp", "Celsius") ?:"Celsius"
-    val savedWind = sharedPreferences.getString("wind", "meter/sec") ?:"meter/sec"
+    val savedLanguage = sharedPreferences.getString(stringResource(R.string.lang), stringResource(R.string.en))?:stringResource(R.string.en)
+    val savedTemperature = sharedPreferences.getString(
+        stringResource(R.string.temp),
+        stringResource(R.string.celsius)
+    ) ?: stringResource(R.string.celsius)
+    val savedWind = sharedPreferences.getString("wind", stringResource(R.string.meter_sec),) ?:stringResource(R.string.meter_sec)
 
 
-    val locationOptions = listOf("GPS", "Map")
-    val lableLocation="Location"
-    val languageOptions = listOf("en", "ar")
-    val lableLanguage="Language"
-    val windOptions = listOf("meter/sec", "mile/h")
-    val lableWind="Wind Speed"
-    val temperatureOptions= listOf("Celsius","kelvin", "Fahrenheit")
-    val lableTemperature="Temperature"
+    val locationOptions = listOf(stringResource(R.string.gps), stringResource(R.string.map))
+    val lableLocation= stringResource(R.string.location)
+    val languageOptions = listOf(stringResource(R.string.en), stringResource(R.string.ar))
+    val lableLanguage= stringResource(R.string.language)
+    val windOptions = listOf(stringResource(R.string.meter_sec), stringResource(R.string.mile_h))
+    val lableWind= stringResource(R.string.wind_speed)
+    val temperatureOptions= listOf(
+        stringResource(R.string.celsius),
+        stringResource(R.string.kelvin), stringResource(R.string.fahrenheit))
+    val lableTemperature= stringResource(R.string.temperature)
 
     Column (modifier = Modifier.fillMaxSize()){
         MenueCard(locationOptions,lableLocation,140,{
@@ -98,8 +105,10 @@ fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<S
                     .height(48.dp)
                     .selectable(
                         selected = (text == selectedOption.value),
-                        onClick = { selectedOption.value=text
-                                  action(text)},
+                        onClick = {
+                            selectedOption.value = text
+                            action(text)
+                        },
                         role = Role.RadioButton
                     )
                     .padding(horizontal = 16.dp),
