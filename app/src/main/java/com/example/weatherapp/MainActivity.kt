@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -43,42 +44,46 @@ import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
+
     //lateinit var addressState: MutableState<String>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationState:MutableState<Location>
+   // var sharedPreferences=this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
      WeatherAppTheme {
+       //  Log.i("k", "onCreate: ${sharedPreferences.getString("lat","31.0797867")}")
          val currentContext = LocalContext.current
          locationState= remember { mutableStateOf(Location(LocationManager.GPS_PROVIDER)) }
          var lat=locationState.value.latitude
          var lon = locationState.value.longitude
          Log.e("TestLog", "This is a test log message!${locationState.value.latitude }++++++++++ ${locationState.value.longitude} ")
         // addressState = remember { mutableStateOf("") }
-         /*  Box(
-               modifier = Modifier
-                   .fillMaxSize()
-           ) {
-               //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
-               val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2  ))
-               val progress by animateLottieCompositionAsState(
-                   composition,
-                   iterations = LottieConstants.IterateForever
-               )
 
-               LottieAnimation(
-                   composition = composition,
-                   progress = { progress },
-                   modifier = Modifier.fillMaxSize(),
-                   contentScale = ContentScale.FillBounds
-               )
-
-           }*/
          ShowNavBar(this, application = application,lat,lon)
 
      }
+            /*  Box(
+           modifier = Modifier
+               .fillMaxSize()
+       ) {
+           //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
+           val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2  ))
+           val progress by animateLottieCompositionAsState(
+               composition,
+               iterations = LottieConstants.IterateForever
+           )
+
+           LottieAnimation(
+               composition = composition,
+               progress = { progress },
+               modifier = Modifier.fillMaxSize(),
+               contentScale = ContentScale.FillBounds
+           )
+
+       }*/
 
      }
 

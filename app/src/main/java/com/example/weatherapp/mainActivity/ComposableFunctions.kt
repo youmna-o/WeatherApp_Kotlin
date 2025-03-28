@@ -77,7 +77,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Settings.rout) { Settings(viewModel) }
-                composable(Screen.Weather.rout) { WeatherDetailsScreen(activity,viewModel,currentLat,currentLon) }
+                composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
                 composable(Screen.Favourite.rout) { FavouritScreen() }
                 composable(Screen.Notification.rout) { NotificationScreen() }
             }

@@ -49,15 +49,15 @@ fun Settings(viewModel: WeatherDetailsViewModel){
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val selectedTemperature by viewModel.temp.collectAsStateWithLifecycle()
     val selectedWind by viewModel.wind.collectAsStateWithLifecycle()
-    val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
+//to get it again on ui from shared pref
     val savedLanguage = sharedPreferences.getString(stringResource(R.string.lang), stringResource(R.string.en))?:stringResource(R.string.en)
     val savedTemperature = sharedPreferences.getString(
         stringResource(R.string.temp),
         stringResource(R.string.celsius)
     ) ?: stringResource(R.string.celsius)
     val savedWind = sharedPreferences.getString("wind", stringResource(R.string.meter_sec),) ?:stringResource(R.string.meter_sec)
-
+    val savedMethod = sharedPreferences.getString("locationMethod",stringResource(R.string.gps))?:stringResource(R.string.gps)
 
     val locationOptions = listOf(stringResource(R.string.gps), stringResource(R.string.map))
     val lableLocation= stringResource(R.string.location)
@@ -75,7 +75,8 @@ fun Settings(viewModel: WeatherDetailsViewModel){
             editor.putString("locationMethod",it)
             editor.apply()
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
-        },locationState)
+
+        },savedMethod)
         MenueCard(languageOptions,lableLanguage,140,{
             editor.putString("lang",it)
             editor.apply()
@@ -91,14 +92,12 @@ fun Settings(viewModel: WeatherDetailsViewModel){
             editor.apply()
             viewModel.updateParameters(locationState,langState,it,selectedWind)
         },savedTemperature)
-       //println(sharedPreferences.getStringSet(selectedTemperature,""))
     }
 
 }
 @Composable
 fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit,defultOption:String) {
     val selectedOption = remember(defultOption) { mutableStateOf(defultOption) }
-   // val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
     Column(modifier.selectableGroup()) {
         radioOptions.forEach { text ->
             Row(

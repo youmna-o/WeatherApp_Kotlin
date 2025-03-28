@@ -1,5 +1,7 @@
 package com.example.weatherapp.weatherScreen
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 
@@ -30,23 +32,30 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherDetailsScreen(activity: ComponentActivity,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double){
+fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double){
     WeatherAppTheme {
         val context = LocalContext.current
-     getWeatherAndForecast(viewModel,currentLat,currentLon)
+     getWeatherAndForecast(context,viewModel,currentLat,currentLon)
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
+private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
+     val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val weatherState by viewModel.weather.collectAsStateWithLifecycle()
     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
-    val latState by viewModel.lat.collectAsStateWithLifecycle()
-    val lonState by viewModel.lon.collectAsStateWithLifecycle()
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
+        if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
+            viewModel.updateCurrentLocation(currentLat,currentLon)
+            viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
+            viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
+        }else{//must come from map
+             viewModel.getForecastByCoord(31.0797867,31.590905,"ar","metric")
+             viewModel.getCurrentWeatherByCoord(31.0797867,31.590905,"ar","metric")
+        }
        // viewModel.getCurrentWeather(cityState,langState,unitState)
         //viewModel.getForecast(cityState,langState,unitState)
       //  =================> when you get lat and long put then like this
@@ -55,8 +64,8 @@ private fun getWeatherAndForecast(viewModel: WeatherDetailsViewModel,currentLat:
 
        // viewModel.getForecastByCoord(latState,lonState,langState,unitState)
         //viewModel.getCurrentWeatherByCoord(latState,lonState,langState,unitState)
-        viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
-        viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
+
+
     }
     when (weatherState) {
         is Response.Loading -> {

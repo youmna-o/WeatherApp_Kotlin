@@ -2,6 +2,7 @@ package com.example.weatherapp.weatherScreen
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,7 +31,7 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     val message: LiveData<String> =mutableMessage
 
 //show data od dikirnis hard code
-    private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
+   private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
     val lat : StateFlow<Double> = defLat.asStateFlow()
     private val defLon=MutableStateFlow(sharedPreferences.getString("lon","31.590905")?.toDouble()?:31.590905)
     val lon: StateFlow<Double> = defLon.asStateFlow()
@@ -45,9 +46,29 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     val temp : StateFlow<String> = defTemp.asStateFlow()
     private val defUnit=MutableStateFlow(sharedPreferences.getString("unit","metric")?:"metric")
     val unit : StateFlow<String> = defUnit.asStateFlow()
+    init {
+       // updateParameters(locationMethod.value,lang.value,temp.value,wind.value)
+        //updateCurrentLocation(lat.value,lon.value)
+    }
 
-    fun updateParameters(newLocationMwthod:String,newLang:String, newTemp: String, newWind: String){
-        defLocationMethod.value=newLocationMwthod
+
+
+   fun updateCurrentLocation(newLat:Double,newLon:Double){
+       Log.i("TAGE", "updateCurrentLocation: ${newLat}")
+
+       defLat.value = newLat
+       defLon.value = newLon
+
+       sharedPreferences.edit()
+           .putString("lat", newLat.toString())
+           .putString("lon", newLon.toString())
+           .apply()
+       Log.i("TAGE", "updateCurrentLocation: ${newLat}")
+   }
+
+    fun updateParameters(newLocationMethod:String,newLang:String, newTemp: String, newWind: String){
+        defLocationMethod.value =newLocationMethod
+        //sharedPreferences.edit().putString("locationMethod",newLocationMethod).apply()
         defLang.value=newLang
         defWind.value=newWind
         defTemp.value=newTemp
@@ -61,11 +82,7 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
         sharedPreferences.edit().putString("unit",newUnit).apply()
 
     }
-   /* fun updateLocation(newCity:String,newLat:Double,newLon:Double){
-        defLat.value=newLat
-        defLon.value=newLon
-        defCity.value=newCity
-    }*/
+
     fun getCurrentWeather(city:String,lang:String,unit:String){
         viewModelScope.launch ( Dispatchers.IO){
                 repo.getCurrentWeather(true,city=city,lang=lang,unit=unit) .catch { ex ->

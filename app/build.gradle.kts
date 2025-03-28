@@ -86,5 +86,7 @@ dependencies {
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
     //location
     implementation("com.google.android.gms:play-services-location:21.1.0")
+    //map
+    implementation("com.google.maps.android:maps-compose:6.4.1")
 
 }
