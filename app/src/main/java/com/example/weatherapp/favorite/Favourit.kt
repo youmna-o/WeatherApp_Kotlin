@@ -14,9 +14,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.weatherapp.map.MapScreen
+import com.example.weatherapp.map.MapViewModel
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.rememberCameraPositionState
+
 @Composable
-fun FavouritScreen(){
-    Box (modifier = Modifier
+fun FavouritScreen(viewModel: MapViewModel){
+   MapScreen(viewModel)
+  /*  Box (modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
@@ -24,5 +32,5 @@ fun FavouritScreen(){
             text = "Fav Screen",
             style = MaterialTheme.typography.headlineLarge
         )
-    }
+    }*/
 }

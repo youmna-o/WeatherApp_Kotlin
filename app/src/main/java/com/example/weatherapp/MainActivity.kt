@@ -29,6 +29,7 @@ import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.mainActivity.ShowNavBar
+import com.example.weatherapp.map.MapViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -44,7 +45,7 @@ import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
-
+    val mapViewModel = MapViewModel()
     //lateinit var addressState: MutableState<String>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationState:MutableState<Location>
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
          Log.e("TestLog", "This is a test log message!${locationState.value.latitude }++++++++++ ${locationState.value.longitude} ")
         // addressState = remember { mutableStateOf("") }
 
-         ShowNavBar(this, application = application,lat,lon)
+         ShowNavBar(this, application = application,lat,lon, mapViewModel = mapViewModel)
 
      }
             /*  Box(
