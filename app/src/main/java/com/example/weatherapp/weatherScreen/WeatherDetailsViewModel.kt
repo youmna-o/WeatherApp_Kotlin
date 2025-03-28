@@ -2,6 +2,7 @@ package com.example.weatherapp.weatherScreen
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,19 +30,45 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
+//show data od dikirnis hard code
+   private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
+    val lat : StateFlow<Double> = defLat.asStateFlow()
+    private val defLon=MutableStateFlow(sharedPreferences.getString("lon","31.590905")?.toDouble()?:31.590905)
+    val lon: StateFlow<Double> = defLon.asStateFlow()
+    /////////////////////////////////////////////////////// setting options:
+    private val defLocationMethod=MutableStateFlow(sharedPreferences.getString("locationMethod","GPS")?:"GPS")
+    val locationMethod : StateFlow<String> = defLocationMethod.asStateFlow()
     private val defLang=MutableStateFlow(sharedPreferences.getString("lang","en")?:"en")
     val lang : StateFlow<String> = defLang.asStateFlow()
-    private val defCity=MutableStateFlow(sharedPreferences.getString("city","cairo")?:"cairo")
-    val city : StateFlow<String> = defCity.asStateFlow()
     private val defWind=MutableStateFlow(sharedPreferences.getString("wind","meter/sec")?:"meter/sec")
     val wind : StateFlow<String> = defWind.asStateFlow()
     private val defTemp=MutableStateFlow(sharedPreferences.getString("temp","Celsius")?:"Celsius")
     val temp : StateFlow<String> = defTemp.asStateFlow()
     private val defUnit=MutableStateFlow(sharedPreferences.getString("unit","metric")?:"metric")
     val unit : StateFlow<String> = defUnit.asStateFlow()
+    init {
+       // updateParameters(locationMethod.value,lang.value,temp.value,wind.value)
+        //updateCurrentLocation(lat.value,lon.value)
+    }
 
-    fun updateParameters(newCity:String,newLang:String, newTemp: String, newWind: String){
-        defCity.value=newCity
+
+
+   fun updateCurrentLocation(newLat:Double,newLon:Double){
+       Log.i("TAGE", "updateCurrentLocation: ${newLat}")
+
+       defLat.value = newLat
+       defLon.value = newLon
+
+       sharedPreferences.edit()
+           .putString("lat", newLat.toString())
+           .putString("lon", newLon.toString())
+           .apply()
+       Log.i("TAGE", "updateCurrentLocation: ${newLat}")
+   }
+
+    fun updateParameters(newLocationMethod:String,newLang:String, newTemp: String, newWind: String){
+        defLocationMethod.value =newLocationMethod
+        //sharedPreferences.edit().putString("locationMethod",newLocationMethod).apply()
         defLang.value=newLang
         defWind.value=newWind
         defTemp.value=newTemp
@@ -55,6 +82,7 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
         sharedPreferences.edit().putString("unit",newUnit).apply()
 
     }
+
     fun getCurrentWeather(city:String,lang:String,unit:String){
         viewModelScope.launch ( Dispatchers.IO){
                 repo.getCurrentWeather(true,city=city,lang=lang,unit=unit) .catch { ex ->
@@ -65,6 +93,16 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
                     }
                 }
         }
+    fun getCurrentWeatherByCoord(lat:Double,lon:Double,lang:String,unit:String){
+        viewModelScope.launch ( Dispatchers.IO){
+            repo.getCurrentWeatherByCoord(true,lat=lat,lon=lon,lang=lang,unit=unit) .catch { ex ->
+                currentWeather.value = Response.Failure(ex)
+            }
+                .collect { list ->
+                    currentWeather.value = Response.Success(list)
+                }
+        }
+    }
 
     fun getForecast(city:String,lang:String,unit:String){
         viewModelScope.launch ( Dispatchers.IO){
@@ -75,11 +113,19 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
                 .collect { list ->
                     mutableForecast.value = Response.Success(list)
                 }
-
         }
     }
-
-
+    fun getForecastByCoord(lat:Double,lon:Double,lang:String,unit:String){
+        viewModelScope.launch ( Dispatchers.IO){
+            repo.getForecastByCoord(true,lat=lat,lon = lon,lang=lang,unit=unit)
+                .catch { ex ->
+                    mutableForecast.value = Response.Failure(ex)
+                }
+                .collect { list ->
+                    mutableForecast.value = Response.Success(list)
+                }
+        }
+    }
 }
 
 
