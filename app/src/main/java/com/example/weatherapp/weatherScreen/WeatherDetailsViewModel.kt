@@ -56,10 +56,8 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
 
    fun updateCurrentLocation(newLat:Double,newLon:Double){
        Log.i("TAGE", "updateCurrentLocation: ${newLat}")
-
        defLat.update { newLat }
        defLon.update { newLon }
-
        sharedPreferences.edit()
            .putString("lat", newLat.toString())
            .putString("lon", newLon.toString())

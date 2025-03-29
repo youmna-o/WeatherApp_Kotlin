@@ -1,5 +1,6 @@
 package com.example.weatherapp.weatherScreen
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -38,26 +39,37 @@ fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,c
      getWeatherAndForecast(context,viewModel,currentLat,currentLon)
     }
 }
+@SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
-     // val lat by viewModel.lat.collectAsStateWithLifecycle()
-    //val lon by viewModel.lon.collectAsStateWithLifecycle()
+      val lat by viewModel.lat.collectAsStateWithLifecycle()
+      val lon by viewModel.lon.collectAsStateWithLifecycle()
      val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
      val weatherState by viewModel.weather.collectAsStateWithLifecycle()
      val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
      val langState by viewModel.lang.collectAsStateWithLifecycle()
      val unitState by viewModel.unit.collectAsStateWithLifecycle()
-
-    LaunchedEffect(currentLat,currentLon) {
+//lanch the location without 0.0,0.0 but need run to refresh
+  /*  LaunchedEffect(Unit) {
         if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
-           viewModel.updateCurrentLocation(currentLat,currentLon)
-            viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
-            viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
+           viewModel.updateCurrentLocation(lat,lon)
+            viewModel.getForecastByCoord(lat,lon,langState,unitState)
+            viewModel.getCurrentWeatherByCoord(lat,lon,langState,unitState)
         }else{//must come from map
              viewModel.getForecastByCoord(31.0797867,31.590905,"ar","metric")
              viewModel.getCurrentWeatherByCoord(31.0797867,31.590905,"ar","metric")
-        }
+        }*/
+////lanch the location 0.0,0.0 but  refresh my location
+        LaunchedEffect(currentLat,currentLon) {
+            if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
+                viewModel.updateCurrentLocation(currentLat,currentLon)
+                viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
+                viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
+            }else{//must come from map
+                viewModel.getForecastByCoord(31.0797867,31.590905,"ar","metric")
+                viewModel.getCurrentWeatherByCoord(31.0797867,31.590905,"ar","metric")
+            }
        // viewModel.getCurrentWeather(cityState,langState,unitState)
         //viewModel.getForecast(cityState,langState,unitState)
       //  =================> when you get lat and long put then like this

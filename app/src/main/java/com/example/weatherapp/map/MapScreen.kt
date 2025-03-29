@@ -1,5 +1,6 @@
 package com.example.weatherapp.map
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.example.weatherapp.R
@@ -47,6 +49,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 
 @Composable
@@ -55,6 +58,15 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
     var lat :Double=0.0
     var lon :Double=0.0
     val userLocation by mapViewModel.userLocation
+     val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    var lang= sharedPreferences.getString("lang","en")?:"en"
+
+    //sharedPreferences.getString("wind","meter/sec")?:"meter/sec")
+   /* d.asStateFlow()
+    sharedPreferences.getString("temp","Celsius")?:"Celsius")
+    p.asStateFlow()*/
+    var unit =sharedPreferences.getString("unit","metric")?:"metric"
+
     Column (modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         Card(
             modifier = Modifier
@@ -106,6 +118,8 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
                 .height(60.dp)
                 .clickable() {
                     viewModel.updateCurrentLocation(lat,lon)
+                    viewModel.getCurrentWeatherByCoord(lat,lon,lang,unit)
+                    viewModel.getForecastByCoord(lat,lon,lang,unit)
                     navController.navigate("weather_screen")
 
                 }
