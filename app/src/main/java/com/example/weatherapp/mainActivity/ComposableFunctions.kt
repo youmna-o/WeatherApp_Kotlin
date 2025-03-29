@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -39,10 +41,12 @@ import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.favorite.FavouritScreen
+import com.example.weatherapp.map.MapScreen
 import com.example.weatherapp.map.MapViewModel
 import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.settings.Settings
 import com.example.weatherapp.ui.theme.myOrange
+import com.example.weatherapp.ui.theme.myPurple
 import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.example.weatherapp.weatherScreen.myFactory
@@ -74,13 +78,14 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
             )
             NavHost(
                 navController = navController,
-                startDestination = Screen.Notification.rout,
+                startDestination = Screen.Weather.rout,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable(Screen.Settings.rout) { Settings(viewModel) }
+                composable(Screen.Settings.rout) { Settings(viewModel,mapViewModel,navController) }
                 composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
                 composable(Screen.Favourite.rout) { FavouritScreen(mapViewModel) }
                 composable(Screen.Notification.rout) { NotificationScreen() }
+                composable(Screen.Map.rout) { MapScreen(viewModel,mapViewModel,navController) }
             }
         }
     }
@@ -92,8 +97,8 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationItem(stringResource(R.string.weather), R.drawable.partly_cloudy_day_24dp_5f6368_fill0_wght400_grad0_opsz24, Screen.Weather.rout),
         NavigationItem(stringResource(R.string.settings), Icons.Default.Settings, Screen.Settings.rout),
         NavigationItem(stringResource(R.string.favourite), Icons.Default.Favorite, Screen.Favourite.rout),
-        NavigationItem(stringResource(R.string.notification), Icons.Default.Notifications, Screen.Notification.rout)
-    )
+        NavigationItem(stringResource(R.string.notification), Icons.Default.Notifications, Screen.Notification.rout),
+        NavigationItem("Map", Icons.Default.LocationOn, Screen.Map.rout) )
 
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
@@ -118,15 +123,17 @@ fun BottomNavigationBar(navController: NavController) {
                     when (item.icon) {
                         is Int -> Image(
                             painter = painterResource(id = item.icon),
-                            contentDescription = item.title
+                            colorFilter = ColorFilter.tint(color = myPurple),
+                            contentDescription = item.title,
                         )
-                        is ImageVector -> Icon(item.icon, contentDescription = item.title)
+                        is ImageVector -> Icon(item.icon, contentDescription = item.title, tint = myPurple)
                     }
                 },
                 label = {
                     Text(
                         item.title,
-                        color = if (isSelected) Color.Black else Color.Gray
+                        maxLines = 1,
+                        color = myPurple
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

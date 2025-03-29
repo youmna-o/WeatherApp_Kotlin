@@ -41,15 +41,17 @@ fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,c
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
+     // val lat by viewModel.lat.collectAsStateWithLifecycle()
+    //val lon by viewModel.lon.collectAsStateWithLifecycle()
      val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    val weatherState by viewModel.weather.collectAsStateWithLifecycle()
-    val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
-    val langState by viewModel.lang.collectAsStateWithLifecycle()
-    val unitState by viewModel.unit.collectAsStateWithLifecycle()
+     val weatherState by viewModel.weather.collectAsStateWithLifecycle()
+     val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
+     val langState by viewModel.lang.collectAsStateWithLifecycle()
+     val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
-            viewModel.updateCurrentLocation(currentLat,currentLon)
+           viewModel.updateCurrentLocation(currentLat,currentLon)
             viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
             viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
         }else{//must come from map

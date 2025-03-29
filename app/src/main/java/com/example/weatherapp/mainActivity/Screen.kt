@@ -5,4 +5,5 @@ sealed class Screen(val rout: String) {
     object Settings: Screen("settings_screen")
     object Favourite: Screen("favourite_screen")
     object Notification: Screen("notification_screen")
+    object Map:Screen("map")
 }

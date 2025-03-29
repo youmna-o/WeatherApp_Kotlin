@@ -23,8 +23,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun FavouritScreen(viewModel: MapViewModel){
-   MapScreen(viewModel)
-  /*  Box (modifier = Modifier
+
+    Box (modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
@@ -32,5 +32,5 @@ fun FavouritScreen(viewModel: MapViewModel){
             text = "Fav Screen",
             style = MaterialTheme.typography.headlineLarge
         )
-    }*/
+    }
 }
