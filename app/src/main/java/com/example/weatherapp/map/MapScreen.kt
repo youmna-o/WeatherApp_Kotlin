@@ -80,10 +80,10 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
              GoogleMap(
                    modifier = Modifier.fillMaxSize(),
                            onMapClick = { latLng ->
-                       mapViewModel.setUserLocation(latLng)
+                              // viewModel.updateMapLocation(latLng.longitude,latLng.longitude)
+                          mapViewModel.setUserLocation(latLng)
                               lat=mapViewModel.userLocation.value!!.latitude
                                lon=mapViewModel.userLocation.value!!.longitude
-
                    }
                ){
                    userLocation?.let {
@@ -101,6 +101,12 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
                 .width(200.dp)
                 .height(60.dp)
                 .clickable() {
+                    val lat = mapViewModel.userLocation.value?.latitude ?: 0.0
+                    val lon = mapViewModel.userLocation.value?.longitude ?: 0.0
+                    viewModel.updateMapLocation(lat,lon)
+
+                    navController.navigate("weather_screen/$lat/$lon")
+
                 }
                 .clip(RoundedCornerShape(16.dp)),
             colors = CardDefaults.cardColors(
@@ -117,10 +123,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
                 .width(200.dp)
                 .height(60.dp)
                 .clickable() {
-                    viewModel.updateCurrentLocation(lat,lon)
-                    viewModel.getCurrentWeatherByCoord(lat,lon,lang,unit)
-                    viewModel.getForecastByCoord(lat,lon,lang,unit)
-                    navController.navigate("weather_screen")
+
 
                 }
                 .clip(RoundedCornerShape(16.dp)),

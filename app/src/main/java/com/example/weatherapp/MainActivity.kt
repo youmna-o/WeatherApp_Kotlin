@@ -179,8 +179,7 @@ class MainActivity : ComponentActivity() {
                     super.onLocationResult(location)
                     val myLocation =location.lastLocation?: Location(LocationManager.GPS_PROVIDER)
                     locationState.value=myLocation
-
-                   weatherViewModel.updateCurrentLocation(myLocation.latitude,myLocation.longitude)
+                   // weatherViewModel.updateCurrentLocation(myLocation.latitude,myLocation.longitude)
                     //getAddress(myLocation)
                 }
             },

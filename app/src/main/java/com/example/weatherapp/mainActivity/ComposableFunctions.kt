@@ -82,7 +82,12 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Settings.rout) { Settings(viewModel,mapViewModel,navController) }
-                composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
+                composable("weather_screen/{lat}/{lon}") { backStackEntry ->
+                    val lat = backStackEntry.arguments?.getString("lat")?.toDoubleOrNull() ?: currentLat
+                    val lon = backStackEntry.arguments?.getString("lon")?.toDoubleOrNull() ?: currentLon
+                    WeatherDetailsScreen(viewModel, lat, lon)
+                }
+               // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
                 composable(Screen.Favourite.rout) { FavouritScreen(mapViewModel) }
                 composable(Screen.Notification.rout) { NotificationScreen() }
                 composable(Screen.Map.rout) { MapScreen(viewModel,mapViewModel,navController) }

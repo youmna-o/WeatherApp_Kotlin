@@ -31,11 +31,17 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     private val mutableMessage: MutableLiveData<String> = MutableLiveData()
     val message: LiveData<String> =mutableMessage
 
-//show data od dikirnis hard code
+//show data of dikirnis hard code till currentlocation load
    private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
     val lat : StateFlow<Double> = defLat.asStateFlow()
     private val defLon=MutableStateFlow(sharedPreferences.getString("lon","31.590905")?.toDouble()?:31.590905)
     val lon: StateFlow<Double> = defLon.asStateFlow()
+// data of map
+private val defMapLat=MutableStateFlow<Double>(0.0)
+    val maplat : StateFlow<Double> = defMapLat.asStateFlow()
+    private val defMapLon=MutableStateFlow<Double>(0.0)
+    val maplon: StateFlow<Double> = defMapLon.asStateFlow()
+
     /////////////////////////////////////////////////////// setting options:
     private val defLocationMethod=MutableStateFlow(sharedPreferences.getString("locationMethod","GPS")?:"GPS")
     val locationMethod : StateFlow<String> = defLocationMethod.asStateFlow()
@@ -64,6 +70,16 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
            .apply()
        Log.i("TAGE", "updateCurrentLocation: ${newLat}")
    }
+    fun updateMapLocation(newLat:Double,newLon:Double){
+        Log.i("TAGE", "updateCurrentLocation: ${newLat}")
+        defMapLat.update { newLat }
+        defMapLon.update { newLon }
+        sharedPreferences.edit()
+            .putString("mapLat", newLat.toString())
+            .putString("mapLon", newLon.toString())
+            .apply()
+        Log.i("TAGE", "updateCurrentLocation: ${newLat}")
+    }
 
     fun updateParameters(newLocationMethod:String,newLang:String, newTemp: String, newWind: String){
         defLocationMethod.value =newLocationMethod

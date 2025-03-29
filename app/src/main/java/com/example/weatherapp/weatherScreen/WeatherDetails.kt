@@ -43,8 +43,6 @@ fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,c
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
-      val lat by viewModel.lat.collectAsStateWithLifecycle()
-      val lon by viewModel.lon.collectAsStateWithLifecycle()
      val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
      val weatherState by viewModel.weather.collectAsStateWithLifecycle()
      val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
@@ -67,8 +65,9 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
                 viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
                 viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
             }else{//must come from map
-                viewModel.getForecastByCoord(31.0797867,31.590905,"ar","metric")
-                viewModel.getCurrentWeatherByCoord(31.0797867,31.590905,"ar","metric")
+                viewModel.updateMapLocation(currentLat,currentLon)
+                viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
+                viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
             }
        // viewModel.getCurrentWeather(cityState,langState,unitState)
         //viewModel.getForecast(cityState,langState,unitState)

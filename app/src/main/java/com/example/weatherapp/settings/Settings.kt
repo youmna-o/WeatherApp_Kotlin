@@ -47,8 +47,8 @@ fun Settings(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navCo
      val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-    //val latState by viewModel.lat.collectAsStateWithLifecycle()
-    //val lonState by viewModel.lon.collectAsStateWithLifecycle()
+    /*val latState by viewModel.lat.collectAsStateWithLifecycle()
+    val lonState by viewModel.lon.collectAsStateWithLifecycle()*/
     val locationState by viewModel.locationMethod.collectAsStateWithLifecycle()
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val selectedTemperature by viewModel.temp.collectAsStateWithLifecycle()
@@ -78,8 +78,7 @@ fun Settings(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navCo
         MenueCard(locationOptions,lableLocation,140,{
             editor.putString("locationMethod",it)
             editor.apply()
-
-           // viewModel.updateCurrentLocation(latState,lonState)
+          //  viewModel.updateCurrentLocation(latState,lonState)
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
         },savedMethod,mapViewModel,navController)
         MenueCard(languageOptions,lableLanguage,140,{
