@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WeatherDetailsViewModel(private val repo: Repo,application: Application): ViewModel() {
@@ -56,8 +57,8 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
    fun updateCurrentLocation(newLat:Double,newLon:Double){
        Log.i("TAGE", "updateCurrentLocation: ${newLat}")
 
-       defLat.value = newLat
-       defLon.value = newLon
+       defLat.update { newLat }
+       defLon.update { newLon }
 
        sharedPreferences.edit()
            .putString("lat", newLat.toString())

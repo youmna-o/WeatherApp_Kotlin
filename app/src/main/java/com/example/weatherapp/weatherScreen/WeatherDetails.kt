@@ -49,7 +49,7 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
      val langState by viewModel.lang.collectAsStateWithLifecycle()
      val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(currentLat,currentLon) {
         if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
            viewModel.updateCurrentLocation(currentLat,currentLon)
             viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
