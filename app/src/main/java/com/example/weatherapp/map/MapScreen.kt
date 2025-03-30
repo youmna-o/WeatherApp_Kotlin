@@ -2,6 +2,8 @@ package com.example.weatherapp.map
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,7 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +53,13 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Locale
 
 @Composable
 fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
@@ -58,6 +67,10 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
     var lat :Double=0.0
     var lon :Double=0.0
     val userLocation by viewModel.userLocation
+    var geo =Geocoder(context, Locale.getDefault())
+    var addressState = remember { mutableStateOf("address") }
+
+
 
 
     Column (modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
@@ -73,10 +86,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
              GoogleMap(
                    modifier = Modifier.fillMaxSize(),
                            onMapClick = { latLng ->
-                          viewModel.setUserLocation(latLng)
-                              //lat=mapViewModel.userLocation.value!!.latitude
-                               //lon=mapViewModel.userLocation.value!!.longitude
-                   }
+                          viewModel.setUserLocation(latLng) }
                ){
                    userLocation?.let {
                        Marker(
@@ -96,9 +106,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
                      lat = viewModel.userLocation.value?.latitude ?: 0.0
                      lon = viewModel.userLocation.value?.longitude ?: 0.0
                     viewModel.updateMapLocation(lat,lon)
-
                     navController.navigate("weather_screen/$lat/$lon")
-
                 }
                 .clip(RoundedCornerShape(16.dp)),
             colors = CardDefaults.cardColors(
@@ -115,7 +123,8 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
                 .width(200.dp)
                 .height(60.dp)
                 .clickable() {
-
+                    lat = viewModel.userLocation.value?.latitude ?: 0.0
+                    lon = viewModel.userLocation.value?.longitude ?: 0.0
 
                 }
                 .clip(RoundedCornerShape(16.dp)),
@@ -125,8 +134,30 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
             Text("Add To Favorites", maxLines = 1, fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp))
 
         }
+        fun getAddress(context: Context ,lat:Double, lon:Double):String {
+            val addresses = Geocoder(context, Locale.getDefault())
+                .getFromLocation(lat, lon, 1)
+            val city = addresses?.firstOrNull()?.locality ?: "No country found"
+            Log.e("Geocoder Error", "111${city}", )
+            println(city)
+            return city
+        }
+        LaunchedEffect(userLocation) {
+            userLocation?.let {
+                location ->
+                addressState.value="loading"
+                addressState.value= getAddress(context,location.latitude,location.longitude)
+                Log.e("Geocoder Error", "final ${addressState.value}", )
 
+            }
+
+         // navController.navigate("notification_screen")
+        }
+
+                            }
     }
+
+
    /* val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -152,4 +183,31 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
     }*/
 
 
-}
+/*      fun getAddress(lat:Double, lon:Double) {
+           CoroutineScope(Dispatchers.IO).launch {
+               try {
+                   val addresses = Geocoder(context, Locale.getDefault())
+                       .getFromLocation(lat, lon, 1)
+
+                   val city = addresses?.firstOrNull()?.locality ?: "No country found"
+                   Log.e("Geocoder Error", "111${city}", )
+                   println(city)
+                   withContext(Dispatchers.Main) {
+                       addressState.value=city
+                   }
+               } catch (e: Exception) {
+                   withContext(Dispatchers.Main) {
+                       addressState.value = "Error getting address"
+                   }
+                   Log.e("Geocoder Error", "Failed to get address", e)
+               }
+           }
+       }*/
+// getAddress(lat,lon)
+//Log.e("3Geocoder Error", "22222222${lat}${lon}", )
+
+/*    lat = viewModel.userLocation.value?.latitude ?: 0.0
+    lon = viewModel.userLocation.value?.longitude ?: 0.0
+
+    viewModel.updateMapLocation(lat,lon)
+*/
