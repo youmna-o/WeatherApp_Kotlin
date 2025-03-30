@@ -51,7 +51,6 @@ const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
 
     private val weatherViewModel: WeatherDetailsViewModel by viewModels()
-    private val mapViewModel: MapViewModel by viewModels()
  //   val viewModel=WeatherDetailsViewModel()
     //lateinit var addressState: MutableState<String>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -73,7 +72,7 @@ class MainActivity : ComponentActivity() {
          Log.e("TestLog", "This is a test log message!${locationState.value.latitude }++++++++++ ${locationState.value.longitude} ")
         // addressState = remember { mutableStateOf("") }
 
-         ShowNavBar(this, application = application,lat,lon, mapViewModel = mapViewModel)
+         ShowNavBar(this, application = application,lat,lon)
 
      }
             /*  Box(

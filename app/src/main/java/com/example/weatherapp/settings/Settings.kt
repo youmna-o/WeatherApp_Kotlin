@@ -42,7 +42,7 @@ import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
 
 @Composable
-fun Settings(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navController: NavController){
+fun Settings(viewModel: WeatherDetailsViewModel,navController: NavController){
     val context= LocalContext.current
      val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -80,27 +80,27 @@ fun Settings(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navCo
             editor.apply()
           //  viewModel.updateCurrentLocation(latState,lonState)
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
-        },savedMethod,mapViewModel,navController)
+        },savedMethod,navController)
         MenueCard(languageOptions,lableLanguage,140,{
             editor.putString("lang",it)
             editor.apply()
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
-        },savedLanguage,mapViewModel,navController)
+        },savedLanguage,navController)
         MenueCard(windOptions,lableWind,140,{
             editor.putString("wind",it)
             editor.apply()
             viewModel.updateParameters(locationState,langState,selectedTemperature,it)
-        },savedWind,mapViewModel,navController)
+        },savedWind,navController)
         MenueCard(temperatureOptions,lableTemperature,180,{
             editor.putString("temp",it)
             editor.apply()
             viewModel.updateParameters(locationState,langState,it,selectedWind)
-        },savedTemperature,mapViewModel,navController)
+        },savedTemperature,navController)
     }
 
 }
 @Composable
-fun RadioButtonSingleSelection(navController: NavController,modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit,defultOption:String,mapViewModel: MapViewModel) {
+fun RadioButtonSingleSelection(navController: NavController,modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit,defultOption:String) {
     val selectedOption = remember(defultOption) { mutableStateOf(defultOption) }
     Column(modifier.selectableGroup()) {
         radioOptions.forEach { text ->
@@ -132,7 +132,7 @@ fun RadioButtonSingleSelection(navController: NavController,modifier: Modifier =
     }
 }
 @Composable
-fun MenueCard(radioOptions:List<String>, lable:String, height:Int, action:  (String) -> Unit, defultOption: String,mapViewModel: MapViewModel,navController: NavController){
+fun MenueCard(radioOptions:List<String>, lable:String, height:Int, action:  (String) -> Unit, defultOption: String,navController: NavController){
     Spacer(modifier = Modifier.height(4.dp))
     Card(
         modifier = Modifier
@@ -145,7 +145,7 @@ fun MenueCard(radioOptions:List<String>, lable:String, height:Int, action:  (Str
         ) {
         Column (){
             Text(lable, fontSize = 28.sp, modifier = Modifier.padding(start = 20.dp))
-            RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable, action = action, defultOption = defultOption, mapViewModel = mapViewModel, navController = navController)
+            RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable, action = action, defultOption = defultOption,  navController = navController)
         }
     }
 }

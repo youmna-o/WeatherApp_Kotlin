@@ -3,6 +3,8 @@ package com.example.weatherapp.weatherScreen
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +14,7 @@ import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.Response
 import com.example.weatherapp.data.repo.Repo
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +40,9 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     private val defLon=MutableStateFlow(sharedPreferences.getString("lon","31.590905")?.toDouble()?:31.590905)
     val lon: StateFlow<Double> = defLon.asStateFlow()
 // data of map
+private val _userLocation = mutableStateOf<LatLng?>(null)
+    val userLocation: State<LatLng?> = _userLocation
+
 private val defMapLat=MutableStateFlow<Double>(0.0)
     val maplat : StateFlow<Double> = defMapLat.asStateFlow()
     private val defMapLon=MutableStateFlow<Double>(0.0)
@@ -58,7 +64,9 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
         //updateCurrentLocation(lat.value,lon.value)
     }
 
-
+    fun setUserLocation(latLng: LatLng) {
+        _userLocation.value = latLng
+    }
 
    fun updateCurrentLocation(newLat:Double,newLon:Double){
        Log.i("TAGE", "updateCurrentLocation: ${newLat}")

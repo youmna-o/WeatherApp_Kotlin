@@ -55,7 +55,7 @@ import com.example.weatherapp.weatherScreen.myFactory
 @SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,mapViewModel: MapViewModel) {
+fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double) {
     val navController = rememberNavController()
     val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService)),application)
     val viewModel: WeatherDetailsViewModel = ViewModelProvider(activity, factory)
@@ -81,16 +81,16 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                 startDestination = Screen.Weather.rout,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable(Screen.Settings.rout) { Settings(viewModel,mapViewModel,navController) }
+                composable(Screen.Settings.rout) { Settings(viewModel,navController) }
                 composable("weather_screen/{lat}/{lon}") { backStackEntry ->
                     val lat = backStackEntry.arguments?.getString("lat")?.toDoubleOrNull() ?: currentLat
                     val lon = backStackEntry.arguments?.getString("lon")?.toDoubleOrNull() ?: currentLon
                     WeatherDetailsScreen(viewModel, lat, lon)
                 }
                // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
-                composable(Screen.Favourite.rout) { FavouritScreen(mapViewModel) }
+                composable(Screen.Favourite.rout) { FavouritScreen() }
                 composable(Screen.Notification.rout) { NotificationScreen() }
-                composable(Screen.Map.rout) { MapScreen(viewModel,mapViewModel,navController) }
+                composable(Screen.Map.rout) { MapScreen(viewModel,navController) }
             }
         }
     }

@@ -53,19 +53,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 
 @Composable
-fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navController: NavController) {
+fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
     val context = LocalContext.current
     var lat :Double=0.0
     var lon :Double=0.0
-    val userLocation by mapViewModel.userLocation
-     val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    var lang= sharedPreferences.getString("lang","en")?:"en"
+    val userLocation by viewModel.userLocation
 
-    //sharedPreferences.getString("wind","meter/sec")?:"meter/sec")
-   /* d.asStateFlow()
-    sharedPreferences.getString("temp","Celsius")?:"Celsius")
-    p.asStateFlow()*/
-    var unit =sharedPreferences.getString("unit","metric")?:"metric"
 
     Column (modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         Card(
@@ -80,10 +73,9 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
              GoogleMap(
                    modifier = Modifier.fillMaxSize(),
                            onMapClick = { latLng ->
-                              // viewModel.updateMapLocation(latLng.longitude,latLng.longitude)
-                          mapViewModel.setUserLocation(latLng)
-                              lat=mapViewModel.userLocation.value!!.latitude
-                               lon=mapViewModel.userLocation.value!!.longitude
+                          viewModel.setUserLocation(latLng)
+                              //lat=mapViewModel.userLocation.value!!.latitude
+                               //lon=mapViewModel.userLocation.value!!.longitude
                    }
                ){
                    userLocation?.let {
@@ -101,8 +93,8 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
                 .width(200.dp)
                 .height(60.dp)
                 .clickable() {
-                    val lat = mapViewModel.userLocation.value?.latitude ?: 0.0
-                    val lon = mapViewModel.userLocation.value?.longitude ?: 0.0
+                     lat = viewModel.userLocation.value?.latitude ?: 0.0
+                     lon = viewModel.userLocation.value?.longitude ?: 0.0
                     viewModel.updateMapLocation(lat,lon)
 
                     navController.navigate("weather_screen/$lat/$lon")
@@ -159,18 +151,5 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,mapViewModel: MapViewModel,navC
         }
     }*/
 
-   /* GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-                onMapClick = { latLng ->
-            mapViewModel.setUserLocation(latLng)
-        }
-    ){
-        userLocation?.let {
-            Marker(
-                state = MarkerState(position = it),
-                title = "Your Location",
-                snippet = "This is where you are currently located."
-            )
-        }
-    }*/
+
 }

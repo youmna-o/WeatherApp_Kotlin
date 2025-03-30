@@ -18,9 +18,6 @@ class MapViewModel: ViewModel() {
 
     fun setUserLocation(latLng: LatLng) {
         _userLocation.value = latLng
-        Log.i("TAGyy", "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ")
-        Log.i("TAGyy", "fetchUserLocation:${latLng.longitude} ")
-        Log.i("TAGyy", "fetchUserLocation:${latLng.longitude} ")
     }
     // Function to fetch the user's location and update the state
 /*    fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
