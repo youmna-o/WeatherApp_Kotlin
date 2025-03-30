@@ -42,6 +42,8 @@ import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.example.weatherapp.R
+import com.example.weatherapp.data.model.FavCity
+import com.example.weatherapp.favorite.FavViewModel
 import com.example.weatherapp.settings.RadioButtonSingleSelection
 import com.example.weatherapp.ui.theme.myBlue
 import com.example.weatherapp.ui.theme.myPurple
@@ -62,13 +64,14 @@ import timber.log.Timber
 import java.util.Locale
 
 @Composable
-fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
+fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,favViewModel: FavViewModel) {
     val context = LocalContext.current
     var lat :Double=0.0
     var lon :Double=0.0
     val userLocation by viewModel.userLocation
     var geo =Geocoder(context, Locale.getDefault())
     var addressState = remember { mutableStateOf("address") }
+    var city :String="address"
 
 
 
@@ -125,7 +128,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
                 .clickable() {
                     lat = viewModel.userLocation.value?.latitude ?: 0.0
                     lon = viewModel.userLocation.value?.longitude ?: 0.0
-
+                   favViewModel.addFavCity(FavCity(addressState.value,lat,lon))
                 }
                 .clip(RoundedCornerShape(16.dp)),
             colors = CardDefaults.cardColors(
@@ -137,7 +140,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController) {
         fun getAddress(context: Context ,lat:Double, lon:Double):String {
             val addresses = Geocoder(context, Locale.getDefault())
                 .getFromLocation(lat, lon, 1)
-            val city = addresses?.firstOrNull()?.locality ?: "No country found"
+              city = addresses?.firstOrNull()?.locality ?: "No country found"
             Log.e("Geocoder Error", "111${city}", )
             println(city)
             return city

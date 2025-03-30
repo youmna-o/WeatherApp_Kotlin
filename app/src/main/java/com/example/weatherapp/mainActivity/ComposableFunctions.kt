@@ -75,7 +75,6 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
         Box(
@@ -102,7 +101,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
                 composable(Screen.Favourite.rout) { FavouritScreen(favViewModel) }
                 composable(Screen.Notification.rout) { NotificationScreen() }
-                composable(Screen.Map.rout) { MapScreen(viewModel,navController) }
+                composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel) }
             }
         }
     }
