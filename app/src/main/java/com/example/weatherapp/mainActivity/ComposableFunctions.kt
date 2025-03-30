@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
@@ -37,9 +38,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.R
+import com.example.weatherapp.data.local.CityDataBase
+import com.example.weatherapp.data.local.CityLocalDataSource
 import com.example.weatherapp.data.remote.RetrofitHeloer
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import com.example.weatherapp.data.repo.Repo
+import com.example.weatherapp.favorite.FavFactory
+import com.example.weatherapp.favorite.FavViewModel
 import com.example.weatherapp.favorite.FavouritScreen
 import com.example.weatherapp.map.MapScreen
 import com.example.weatherapp.map.MapViewModel
@@ -56,10 +61,17 @@ import com.example.weatherapp.weatherScreen.myFactory
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double) {
+    val context= LocalContext.current
     val navController = rememberNavController()
-    val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService)),application)
+    val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService),
+        CityLocalDataSource(CityDataBase.getInstance(context).getCityDao())
+    ),application)
+    val favFactory = FavFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService),
+        CityLocalDataSource(CityDataBase.getInstance(context).getCityDao())
+    ))
     val viewModel: WeatherDetailsViewModel = ViewModelProvider(activity, factory)
         .get(WeatherDetailsViewModel::class.java)
+    val favViewModel:FavViewModel=ViewModelProvider(activity,favFactory).get(FavViewModel::class.java)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -88,7 +100,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                     WeatherDetailsScreen(viewModel, lat, lon)
                 }
                // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
-                composable(Screen.Favourite.rout) { FavouritScreen() }
+                composable(Screen.Favourite.rout) { FavouritScreen(favViewModel) }
                 composable(Screen.Notification.rout) { NotificationScreen() }
                 composable(Screen.Map.rout) { MapScreen(viewModel,navController) }
             }
