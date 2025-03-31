@@ -1,6 +1,8 @@
 package com.example.weatherapp.map
 
+import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -18,9 +20,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +34,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +53,7 @@ import com.example.weatherapp.data.model.FavCity
 import com.example.weatherapp.favorite.FavViewModel
 import com.example.weatherapp.settings.RadioButtonSingleSelection
 import com.example.weatherapp.ui.theme.myBlue
+import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.google.android.gms.location.LocationServices
@@ -66,12 +74,16 @@ import java.util.Locale
 @Composable
 fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,favViewModel: FavViewModel) {
     val context = LocalContext.current
+    val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
     var lat :Double=0.0
     var lon :Double=0.0
     val userLocation by viewModel.userLocation
     var geo =Geocoder(context, Locale.getDefault())
     var addressState = remember { mutableStateOf("address") }
     var city :String="address"
+    var showDialog by remember { mutableStateOf(false) }
 
 
 
@@ -80,7 +92,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .height(540.dp)
                 .clip(RoundedCornerShape(16.dp)),
             colors = CardDefaults.cardColors(
                 containerColor = myBlue
@@ -100,12 +112,13 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                    }
                }
             }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Card(
             modifier = Modifier
                 .width(200.dp)
-                .height(60.dp)
+                .height(50.dp)
                 .clickable() {
+                    editor.putString("locationMethod","Map").apply()
                      lat = viewModel.userLocation.value?.latitude ?: 0.0
                      lon = viewModel.userLocation.value?.longitude ?: 0.0
                     viewModel.updateMapLocation(lat,lon)
@@ -124,11 +137,15 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
         Card(
             modifier = Modifier
                 .width(200.dp)
-                .height(60.dp)
+                .height(50.dp)
                 .clickable() {
                     lat = viewModel.userLocation.value?.latitude ?: 0.0
                     lon = viewModel.userLocation.value?.longitude ?: 0.0
-                   favViewModel.addFavCity(FavCity(addressState.value,lat,lon))
+                    if (addressState.value == "No country found") {
+                        showDialog = true
+                    } else {
+                        favViewModel.addFavCity(FavCity(addressState.value, lat, lon))
+                    }
                 }
                 .clip(RoundedCornerShape(16.dp)),
             colors = CardDefaults.cardColors(
@@ -152,9 +169,25 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                 addressState.value= getAddress(context,location.latitude,location.longitude)
                 Log.e("Geocoder Error", "final ${addressState.value}", )
 
+
             }
 
-         // navController.navigate("notification_screen")
+        }
+        if (showDialog) {
+            AlertDialog(
+                containerColor = myPurple,
+                onDismissRequest = { showDialog = false },
+                title = { Text("Error") },
+                text = { Text("Location not found. Please select a valid location.") },
+                confirmButton = {
+                    Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
+                        containerColor = myOrange,
+                        contentColor = Color.White
+                    )) {
+                        Text("OK")
+                    }
+                }
+            )
         }
 
                             }

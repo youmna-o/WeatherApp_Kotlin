@@ -99,7 +99,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                     WeatherDetailsScreen(viewModel, lat, lon)
                 }
                // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
-                composable(Screen.Favourite.rout) { FavouritScreen(favViewModel) }
+                composable(Screen.Favourite.rout) { FavouritScreen(favViewModel=favViewModel,viewModel, navController = navController) }
                 composable(Screen.Notification.rout) { NotificationScreen() }
                 composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel) }
             }

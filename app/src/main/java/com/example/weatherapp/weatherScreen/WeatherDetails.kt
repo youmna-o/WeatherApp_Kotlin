@@ -3,6 +3,8 @@ package com.example.weatherapp.weatherScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
 
@@ -34,7 +36,15 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double){
     WeatherAppTheme {
         val context = LocalContext.current
-     getWeatherAndForecast(context,viewModel,currentLat,currentLon)
+        if (isNetworkAvailable(context)){
+            getWeatherAndForecast(context,viewModel,currentLat,currentLon)
+        } else{
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+               Text("Wait to connect the Internet")
+                CircularProgressIndicator()
+            }
+
+    }
     }
 }
 @SuppressLint("SuspiciousIndentation")
@@ -46,36 +56,17 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
      val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
      val langState by viewModel.lang.collectAsStateWithLifecycle()
      val unitState by viewModel.unit.collectAsStateWithLifecycle()
-//lanch the location without 0.0,0.0 but need run to refresh
-  /*  LaunchedEffect(Unit) {
-        if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
-           viewModel.updateCurrentLocation(lat,lon)
-            viewModel.getForecastByCoord(lat,lon,langState,unitState)
-            viewModel.getCurrentWeatherByCoord(lat,lon,langState,unitState)
-        }else{//must come from map
-             viewModel.getForecastByCoord(31.0797867,31.590905,"ar","metric")
-             viewModel.getCurrentWeatherByCoord(31.0797867,31.590905,"ar","metric")
-        }*/
-////lanch the location 0.0,0.0 but  refresh my location
+
         LaunchedEffect(currentLat,currentLon) {
             if(sharedPreferences.getString("locationMethod","GPS")=="GPS"){
                 viewModel.updateCurrentLocation(currentLat,currentLon)
                 viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
                 viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
-            }else{//must come from map
+            }else{ //must come from map
                 viewModel.updateMapLocation(currentLat,currentLon)
                 viewModel.getForecastByCoord(currentLat,currentLon,langState,unitState)
                 viewModel.getCurrentWeatherByCoord(currentLat,currentLon,langState,unitState)
             }
-       // viewModel.getCurrentWeather(cityState,langState,unitState)
-        //viewModel.getForecast(cityState,langState,unitState)
-      //  =================> when you get lat and long put then like this
-         // viewModel.getForecastByCoord(45.1337,7.367,"en","metric")
-       // viewModel.getCurrentWeatherByCoord(45.1337,7.367,"en","metric")
-
-       // viewModel.getForecastByCoord(latState,lonState,langState,unitState)
-        //viewModel.getCurrentWeatherByCoord(latState,lonState,langState,unitState)
-
 
     }
     when (weatherState) {
@@ -101,3 +92,8 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
     }
 }
 
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+    return activeNetwork?.isConnected == true
+}
