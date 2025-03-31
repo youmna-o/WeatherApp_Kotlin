@@ -33,31 +33,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.weatherapp.R
+import com.example.weatherapp.map.MapScreen
+import com.example.weatherapp.map.MapViewModel
 import com.example.weatherapp.ui.theme.myBlue
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
 
 @Composable
-fun Settings(viewModel: WeatherDetailsViewModel){
+fun Settings(viewModel: WeatherDetailsViewModel,navController: NavController){
     val context= LocalContext.current
      val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-
+    /*val latState by viewModel.lat.collectAsStateWithLifecycle()
+    val lonState by viewModel.lon.collectAsStateWithLifecycle()*/
     val locationState by viewModel.locationMethod.collectAsStateWithLifecycle()
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val selectedTemperature by viewModel.temp.collectAsStateWithLifecycle()
     val selectedWind by viewModel.wind.collectAsStateWithLifecycle()
-    val unitState by viewModel.unit.collectAsStateWithLifecycle()
 
+//to get it again on ui from shared pref
     val savedLanguage = sharedPreferences.getString(stringResource(R.string.lang), stringResource(R.string.en))?:stringResource(R.string.en)
     val savedTemperature = sharedPreferences.getString(
         stringResource(R.string.temp),
         stringResource(R.string.celsius)
     ) ?: stringResource(R.string.celsius)
     val savedWind = sharedPreferences.getString("wind", stringResource(R.string.meter_sec),) ?:stringResource(R.string.meter_sec)
-
+    val savedMethod = sharedPreferences.getString("locationMethod",stringResource(R.string.gps))?:stringResource(R.string.gps)
 
     val locationOptions = listOf(stringResource(R.string.gps), stringResource(R.string.map))
     val lableLocation= stringResource(R.string.location)
@@ -74,52 +78,49 @@ fun Settings(viewModel: WeatherDetailsViewModel){
         MenueCard(locationOptions,lableLocation,140,{
             editor.putString("locationMethod",it)
             editor.apply()
+          //  viewModel.updateCurrentLocation(latState,lonState)
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
-        },locationState)
+        },savedMethod,navController)
         MenueCard(languageOptions,lableLanguage,140,{
             editor.putString("lang",it)
             editor.apply()
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
-        },savedLanguage)
+        },savedLanguage,navController)
         MenueCard(windOptions,lableWind,140,{
             editor.putString("wind",it)
             editor.apply()
             viewModel.updateParameters(locationState,langState,selectedTemperature,it)
-        },savedWind)
+        },savedWind,navController)
         MenueCard(temperatureOptions,lableTemperature,180,{
             editor.putString("temp",it)
             editor.apply()
             viewModel.updateParameters(locationState,langState,it,selectedWind)
-        },savedTemperature)
-       //println(sharedPreferences.getStringSet(selectedTemperature,""))
+        },savedTemperature,navController)
     }
 
 }
 @Composable
-fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit,defultOption:String) {
+fun RadioButtonSingleSelection(navController: NavController,modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit,defultOption:String) {
     val selectedOption = remember(defultOption) { mutableStateOf(defultOption) }
-   // val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
     Column(modifier.selectableGroup()) {
         radioOptions.forEach { text ->
             Row(
                 Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .selectable(
-                        selected = (text == selectedOption.value),
-                        onClick = {
-                            selectedOption.value = text
-                            action(text)
-                        },
-                        role = Role.RadioButton
-                    )
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
                     //to save my last choice in default value
                     selected = (text == selectedOption.value),
-                    onClick = null
+                    onClick ={
+                        selectedOption.value = text
+                        action(text)
+                        if(text=="Map"){
+                            navController.navigate("map")
+                        }
+                    },
                 )
                 Text(
                     text = text,
@@ -131,7 +132,7 @@ fun RadioButtonSingleSelection(modifier: Modifier = Modifier,radioOptions:List<S
     }
 }
 @Composable
-fun MenueCard(radioOptions:List<String>,lable:String,height:Int,action: (String) -> Unit ,defultOption: String){
+fun MenueCard(radioOptions:List<String>, lable:String, height:Int, action:  (String) -> Unit, defultOption: String,navController: NavController){
     Spacer(modifier = Modifier.height(4.dp))
     Card(
         modifier = Modifier
@@ -144,7 +145,7 @@ fun MenueCard(radioOptions:List<String>,lable:String,height:Int,action: (String)
         ) {
         Column (){
             Text(lable, fontSize = 28.sp, modifier = Modifier.padding(start = 20.dp))
-            RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable, action = action, defultOption = defultOption)
+            RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable, action = action, defultOption = defultOption,  navController = navController)
         }
     }
 }

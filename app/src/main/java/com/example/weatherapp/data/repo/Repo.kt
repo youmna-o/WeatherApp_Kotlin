@@ -1,11 +1,15 @@
 package com.example.weatherapp.data.repo
 
+import com.example.weatherapp.data.local.CityLocalDataSource
+import com.example.weatherapp.data.model.FavCity
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.remote.WeatherRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
-class Repo ( private val remoteDataSource: WeatherRemoteDataSource){
+class Repo ( private val remoteDataSource: WeatherRemoteDataSource,
+             private val localDataSource: CityLocalDataSource
+){
     suspend fun getCurrentWeather(isOnline:Boolean, city:String, lang:String,unit:String): Flow<WeatherData> {
         return remoteDataSource.getCurrentWeather(city=city, lang=lang,unit = unit)
 
@@ -23,12 +27,25 @@ class Repo ( private val remoteDataSource: WeatherRemoteDataSource){
 
     }
 
+    //local
+    suspend fun getFavCity():Flow<List<FavCity>>{
+        return   localDataSource.getAll()
+
+    }
+    suspend fun insert(city: FavCity):Long{
+        return localDataSource.insertCity(city)
+    }
+    suspend fun delete(city: FavCity):Int{
+        return localDataSource.delete(city)
+
+    }
+
     companion object{
         @Volatile
         private var instance : Repo? = null
-        fun getInstance(remoteDataSource: WeatherRemoteDataSource): Repo {
+        fun getInstance(remoteDataSource: WeatherRemoteDataSource,localDataSource: CityLocalDataSource): Repo {
             return instance ?: synchronized(this){
-                val temp= Repo (remoteDataSource)
+                val temp= Repo (remoteDataSource,localDataSource)
                 instance = temp
                 temp
             }
