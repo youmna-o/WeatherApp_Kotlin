@@ -2,6 +2,7 @@ package com.example.weatherapp.weatherScreen
 
 import android.app.Application
 import android.content.Context
+import android.location.Geocoder
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class WeatherDetailsViewModel(private val repo: Repo,application: Application): ViewModel() {
     private val sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -59,9 +62,29 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
     val temp : StateFlow<String> = defTemp.asStateFlow()
     private val defUnit=MutableStateFlow(sharedPreferences.getString("unit","metric")?:"metric")
     val unit : StateFlow<String> = defUnit.asStateFlow()
+
+    private val _selectedLocation = mutableStateOf<LatLng?>(null)
+    val selectedLocation: State<LatLng?> = _selectedLocation
     init {
        // updateParameters(locationMethod.value,lang.value,temp.value,wind.value)
         //updateCurrentLocation(lat.value,lon.value)
+    }
+    fun selectLocation(selectedPlace: String, context: Context) {
+        viewModelScope.launch {
+            val geocoder = Geocoder(context)
+            val addresses = withContext(Dispatchers.IO) {
+                // Perform geocoding on a background thread
+                geocoder.getFromLocationName(selectedPlace, 1)
+            }
+            if (!addresses.isNullOrEmpty()) {
+                // Update the selected location in the state
+                val address = addresses[0]
+                val latLng = LatLng(address.latitude, address.longitude)
+                _selectedLocation.value = latLng
+            } else {
+                Timber.tag("MapScreen").e("No location found for the selected place.")
+            }
+        }
     }
 
     fun setUserLocation(latLng: LatLng) {

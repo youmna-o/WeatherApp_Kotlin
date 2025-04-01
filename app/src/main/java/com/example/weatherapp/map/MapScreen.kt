@@ -1,5 +1,6 @@
 package com.example.weatherapp.map
 
+import MapSearchBar
 import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,12 +8,14 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -84,11 +87,17 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
     var addressState = remember { mutableStateOf("address") }
     var city :String="address"
     var showDialog by remember { mutableStateOf(false) }
+    val selectedLocation by viewModel.selectedLocation
 
 
 
 
     Column (modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+        MapSearchBar (
+            onPlaceSelected = { place ->
+                viewModel.selectLocation(place, context)
+            }
+        )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -110,50 +119,62 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                            snippet = "This is where you are currently located."
                        )
                    }
+                 selectedLocation?.let {
+                     Marker(
+                         state = MarkerState(position = it), // Place the marker at the selected location
+                         title = "Selected Location", // Set the title for the marker
+                         snippet = "This is the place you selected." // Set the snippet for the marker
+                     )
+                     // Move the camera to the selected location with a zoom level of 15f
+                 }
                }
             }
         Spacer(modifier = Modifier.height(8.dp))
-        Card(
-            modifier = Modifier
-                .width(200.dp)
-                .height(50.dp)
-                .clickable() {
-                    editor.putString("locationMethod","Map").apply()
-                     lat = viewModel.userLocation.value?.latitude ?: 0.0
-                     lon = viewModel.userLocation.value?.longitude ?: 0.0
-                    viewModel.updateMapLocation(lat,lon)
-                    navController.navigate("weather_screen/$lat/$lon")
-                }
-                .clip(RoundedCornerShape(16.dp)),
-            colors = CardDefaults.cardColors(
-                containerColor = myBlue
-            )){
-            Text("Get Weather", maxLines = 1, fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier
-                .padding(start = 8.dp, top = 8.dp)
-                .fillMaxSize())
-
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        Card(
-            modifier = Modifier
-                .width(200.dp)
-                .height(50.dp)
-                .clickable() {
-                    lat = viewModel.userLocation.value?.latitude ?: 0.0
-                    lon = viewModel.userLocation.value?.longitude ?: 0.0
-                    if (addressState.value == "No country found") {
-                        showDialog = true
-                    } else {
-                        favViewModel.addFavCity(FavCity(addressState.value, lat, lon))
+        Row {
+            Card(
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(50.dp)
+                    .clickable() {
+                        editor.putString("locationMethod","Map").apply()
+                        lat = viewModel.userLocation.value?.latitude ?: 0.0
+                        lon = viewModel.userLocation.value?.longitude ?: 0.0
+                        viewModel.updateMapLocation(lat,lon)
+                        navController.navigate("weather_screen/$lat/$lon")
                     }
-                }
-                .clip(RoundedCornerShape(16.dp)),
-            colors = CardDefaults.cardColors(
-                containerColor = myBlue
-            )){
-            Text("Add To Favorites", maxLines = 1, fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp))
+                    .clip(RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = myBlue
+                )){
+                Text("Get Weather", maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
+                    .padding( top = 8.dp)
+                    .fillMaxSize())
 
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Card(
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(50.dp)
+                    .clickable() {
+                        lat = viewModel.userLocation.value?.latitude ?: 0.0
+                        lon = viewModel.userLocation.value?.longitude ?: 0.0
+                        if (addressState.value == "No country found") {
+                            showDialog = true
+                        } else {
+                            favViewModel.addFavCity(FavCity(addressState.value, lat, lon))
+                            Toast.makeText(context,"Added To Favorites",Toast.LENGTH_LONG).show()
+                        }
+                    }
+                    .clip(RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = myBlue
+                )){
+                Text("Add To Favorites", maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier.padding( top = 8.dp).fillMaxWidth())
+
+            }
         }
+
         fun getAddress(context: Context ,lat:Double, lon:Double):String {
             val addresses = Geocoder(context, Locale.getDefault())
                 .getFromLocation(lat, lon, 1)

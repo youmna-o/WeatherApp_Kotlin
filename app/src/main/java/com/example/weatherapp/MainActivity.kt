@@ -34,6 +34,7 @@ import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.mainActivity.ShowNavBar
 import com.example.weatherapp.map.MapViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.utils.ManifestUtils
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -41,6 +42,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,6 +61,11 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       val apiKey = ManifestUtils.getApiKeyFromManifest(this)
+       // Initialize the Places API with the retrieved API key
+       if (!Places.isInitialized() && apiKey != null) {
+           Places.initialize(applicationContext, apiKey)
+       }
         setContent {
      WeatherAppTheme {
        //  Log.i("k", "onCreate: ${sharedPreferences.getString("lat","31.0797867")}")
