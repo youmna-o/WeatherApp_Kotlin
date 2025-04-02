@@ -48,6 +48,7 @@ import com.example.weatherapp.favorite.FavViewModel
 import com.example.weatherapp.favorite.FavouritScreen
 import com.example.weatherapp.map.MapScreen
 import com.example.weatherapp.map.MapViewModel
+import com.example.weatherapp.notifications.NotificationAlarmScheduler
 import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.settings.Settings
 import com.example.weatherapp.ui.theme.myOrange
@@ -60,7 +61,7 @@ import com.example.weatherapp.weatherScreen.myFactory
 @SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double) {
+fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,notificationAlarmScheduler: NotificationAlarmScheduler) {
     val context= LocalContext.current
     val navController = rememberNavController()
     val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService),
@@ -100,7 +101,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                 }
                // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
                 composable(Screen.Favourite.rout) { FavouritScreen(favViewModel=favViewModel,viewModel, navController = navController) }
-                composable(Screen.Notification.rout) { NotificationScreen() }
+                composable(Screen.Notification.rout) { NotificationScreen(notificationAlarmScheduler) }
                 composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel) }
             }
         }

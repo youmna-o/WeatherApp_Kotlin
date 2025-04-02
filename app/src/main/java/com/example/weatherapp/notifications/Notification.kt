@@ -17,7 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 @Composable
-fun NotificationScreen(){
+fun NotificationScreen(notificationAlarmScheduler: NotificationAlarmScheduler){
+    ReminderScreen(notificationAlarmScheduler)
     Box (modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center

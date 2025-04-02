@@ -47,7 +47,6 @@ import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 @Composable
 fun FavouritScreen(favViewModel: FavViewModel,viewModel: WeatherDetailsViewModel,navController: NavController){
 
-    favViewModel.addFavCity(FavCity("mm",0.23,3.5))
     getAllFavCities(favViewModel,viewModel,navController)
 }
 @Composable

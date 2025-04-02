@@ -33,6 +33,7 @@ import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.mainActivity.ShowNavBar
 import com.example.weatherapp.map.MapViewModel
+import com.example.weatherapp.notifications.NotificationAlarmScheduler
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.utils.ManifestUtils
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
@@ -51,6 +52,9 @@ import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
+    private val notificationAlarmScheduler by lazy {
+        NotificationAlarmScheduler(this)
+    }
 
     private val weatherViewModel: WeatherDetailsViewModel by viewModels()
  //   val viewModel=WeatherDetailsViewModel()
@@ -79,7 +83,7 @@ class MainActivity : ComponentActivity() {
          Log.e("TestLog", "This is a test log message!${locationState.value.latitude }++++++++++ ${locationState.value.longitude} ")
         // addressState = remember { mutableStateOf("") }
 
-         ShowNavBar(this, application = application,lat,lon)
+         ShowNavBar(this, application = application,lat,lon,notificationAlarmScheduler)
 
      }
             /*  Box(
