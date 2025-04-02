@@ -34,11 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.weatherapp.data.Response
 import com.example.weatherapp.data.model.FavCity
-import com.example.weatherapp.ui.theme.myBlue
 import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel

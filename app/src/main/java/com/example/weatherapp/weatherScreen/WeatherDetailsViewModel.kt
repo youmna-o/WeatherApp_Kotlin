@@ -45,6 +45,8 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
 // data of map
 private val _userLocation = mutableStateOf<LatLng?>(null)
     val userLocation: State<LatLng?> = _userLocation
+    /*private val _selectedLocation = mutableStateOf<LatLng?>(null)
+    val selectedLocation: State<LatLng?> = _selectedLocation*/
 
 private val defMapLat=MutableStateFlow<Double>(0.0)
     val maplat : StateFlow<Double> = defMapLat.asStateFlow()
@@ -63,8 +65,7 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
     private val defUnit=MutableStateFlow(sharedPreferences.getString("unit","metric")?:"metric")
     val unit : StateFlow<String> = defUnit.asStateFlow()
 
-    private val _selectedLocation = mutableStateOf<LatLng?>(null)
-    val selectedLocation: State<LatLng?> = _selectedLocation
+
     init {
        // updateParameters(locationMethod.value,lang.value,temp.value,wind.value)
         //updateCurrentLocation(lat.value,lon.value)
@@ -80,7 +81,7 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
                 // Update the selected location in the state
                 val address = addresses[0]
                 val latLng = LatLng(address.latitude, address.longitude)
-                _selectedLocation.value = latLng
+                _userLocation.value = latLng
             } else {
                 Timber.tag("MapScreen").e("No location found for the selected place.")
             }

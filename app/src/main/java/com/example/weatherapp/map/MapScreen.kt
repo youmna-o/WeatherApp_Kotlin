@@ -87,7 +87,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
     var addressState = remember { mutableStateOf("address") }
     var city :String="address"
     var showDialog by remember { mutableStateOf(false) }
-    val selectedLocation by viewModel.selectedLocation
+
 
 
 
@@ -119,14 +119,6 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                            snippet = "This is where you are currently located."
                        )
                    }
-                 selectedLocation?.let {
-                     Marker(
-                         state = MarkerState(position = it), // Place the marker at the selected location
-                         title = "Selected Location", // Set the title for the marker
-                         snippet = "This is the place you selected." // Set the snippet for the marker
-                     )
-                     // Move the camera to the selected location with a zoom level of 15f
-                 }
                }
             }
         Spacer(modifier = Modifier.height(8.dp))
