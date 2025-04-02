@@ -26,14 +26,17 @@ abstract class Notifier(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    open fun createNotificationChannel(
-        importance: Int = NotificationManager.IMPORTANCE_DEFAULT
-    ): NotificationChannel {
+    open fun createNotificationChannel(): NotificationChannel {
         return NotificationChannel(
             notificationChannelId,
             notificationChannelName,
-            importance
-        )
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications for running reminders"
+            setShowBadge(true)
+            enableLights(true)
+            enableVibration(true)
+        }
     }
 
     abstract fun buildNotification(): Notification

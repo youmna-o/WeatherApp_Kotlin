@@ -19,13 +19,4 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 @Composable
 fun NotificationScreen(notificationAlarmScheduler: NotificationAlarmScheduler){
     ReminderScreen(notificationAlarmScheduler)
-    Box (modifier = Modifier
-        .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            text = "NotificationScreen ",
-            style = MaterialTheme.typography.headlineLarge
-        )
-    }
 }
