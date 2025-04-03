@@ -53,6 +53,6 @@ class CityDaoTest {
         assertNotNull(result)
         assertThat(result , `is`(not(-1L)))
         assertThat(result , `is`(1))
-        
+
     }
 }
