@@ -63,6 +63,8 @@ dependencies {
     androidTestImplementation ("org.hamcrest:hamcrest:2.2")
     androidTestImplementation ("org.hamcrest:hamcrest-library:2.2")
     testImplementation("androidx.arch.core:core-testing:2.1.0")
+
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     testImplementation("androidx.arch.core:core-testing:2.1.0")
@@ -92,6 +94,10 @@ dependencies {
     //Coroutine
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+
+    //implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    androidTestImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+
     //lotti
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
     // splash

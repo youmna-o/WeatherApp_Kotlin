@@ -132,7 +132,7 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
 
     fun getCurrentWeather(city:String,lang:String,unit:String){
         viewModelScope.launch ( Dispatchers.IO){
-                repo.getCurrentWeather(true,city=city,lang=lang,unit=unit) .catch { ex ->
+                repo.getCurrentWeather(city=city,lang=lang,unit=unit) .catch { ex ->
                     currentWeather.value = Response.Failure(ex)
                 }
                     .collect { list ->
