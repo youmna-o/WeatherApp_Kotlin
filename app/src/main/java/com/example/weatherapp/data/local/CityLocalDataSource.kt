@@ -9,7 +9,11 @@ class CityLocalDataSource (private val dao:CityDao) : ICityLocalDataSource {
         return  dao.getAll()
     }
     override suspend fun insertCity(city: FavCity):Long{
-        return  dao.insertCity(city)
+        return if (dao.insertCity(city) != -1L) {
+            dao.insertCity(city)
+        } else {
+            -1L
+        }
     }
     override suspend fun delete(city: FavCity):Int{
         return if(city!=null)
