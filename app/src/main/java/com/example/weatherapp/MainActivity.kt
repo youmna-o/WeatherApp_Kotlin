@@ -24,6 +24,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -55,6 +56,8 @@ class MainActivity : ComponentActivity() {
     private val notificationAlarmScheduler by lazy {
         NotificationAlarmScheduler(this)
     }
+    private lateinit var sharedPreferences: SharedPreferences
+    val currentLanguage = Locale.getDefault().language
 
     private val weatherViewModel: WeatherDetailsViewModel by viewModels()
  //   val viewModel=WeatherDetailsViewModel()
@@ -65,10 +68,16 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+       //val savedLanguage = sharedPreferences.getString("lang", "en") ?: "en"
+
        val apiKey = ManifestUtils.getApiKeyFromManifest(this)
        // Initialize the Places API with the retrieved API key
        if (!Places.isInitialized() && apiKey != null) {
            Places.initialize(applicationContext, apiKey)
+       }
+       if (currentLanguage == "ar") {
+           sharedPreferences.edit().putString("lang","ar").apply()
        }
         setContent {
      WeatherAppTheme {

@@ -54,6 +54,19 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.junit.ktx)
+    //Testing
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    testImplementation ("org.hamcrest:hamcrest:2.2")
+    testImplementation ("org.hamcrest:hamcrest-library:2.2")
+    androidTestImplementation ("org.hamcrest:hamcrest:2.2")
+    androidTestImplementation ("org.hamcrest:hamcrest-library:2.2")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation("org.robolectric:robolectric:4.12.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,7 +79,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
-
+    //room
     val room_version = "2.6.1"
     implementation ("androidx.room:room-runtime:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
@@ -78,6 +91,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     //Coroutine
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
     //lotti
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
     // splash
@@ -98,6 +112,9 @@ dependencies {
 
   // Google maps Compose
     implementation(libs.maps.compose)
+    testImplementation ("io.mockk:mockk-android:1.13.17")
+    testImplementation ("io.mockk:mockk-agent:1.13.17")
+
 
 
 }
