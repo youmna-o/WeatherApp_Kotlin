@@ -21,7 +21,11 @@ class RunnerNotifier(
     override val notificationId: Int = 200
 
     override fun buildNotification(title:String,describtion:String,reminderItem: ReminderItem): Notification {
-        val fullScreenIntent = Intent(context, MainActivity::class.java)
+        val fullScreenIntent = Intent(context, MainActivity::class.java).apply {
+            putExtra("DESTINATION", "weather_screen")
+            putExtra("LAT", reminderItem.lat)
+            putExtra("LON", reminderItem.lon)
+        }
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context, 0, fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -30,6 +34,7 @@ class RunnerNotifier(
             action="Cancel"
             putExtra("REMINDER_ID", reminderItem.id)
             putExtra("REMINDER_TIME", reminderItem.time)
+
         }
 
         val cancelPendingIntent = PendingIntent.getBroadcast(

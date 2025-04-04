@@ -16,7 +16,9 @@ class AlarmReceiver : BroadcastReceiver() {
         var reminderItem:ReminderItem
         val id = intent!!.getIntExtra("REMINDER_ID", -1)
         val time = intent!!.getLongExtra("REMINDER_TIME", 0L)
-        reminderItem = ReminderItem(time,id)
+        val lat = intent!!.getDoubleExtra("LAT",36.08725 )
+        val lon = intent!!.getDoubleExtra("LON", 4.45192)
+        reminderItem = ReminderItem(time,id,lat,lon)
         when(intent?.action){
             "Cancel" ->{
                 val scheduler = NotificationAlarmScheduler(context!!)

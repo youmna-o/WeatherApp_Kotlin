@@ -23,6 +23,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -62,6 +64,7 @@ import com.example.weatherapp.weatherScreen.myFactory
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,notificationAlarmScheduler: NotificationAlarmScheduler) {
+
     val context= LocalContext.current
     val navController = rememberNavController()
     val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService),

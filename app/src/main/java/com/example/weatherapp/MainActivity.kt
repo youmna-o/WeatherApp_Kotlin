@@ -53,21 +53,24 @@ import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
-    private val notificationAlarmScheduler by lazy {
+   private val notificationAlarmScheduler by lazy {
         NotificationAlarmScheduler(this)
     }
     private lateinit var sharedPreferences: SharedPreferences
     val currentLanguage = Locale.getDefault().language
-
     private val weatherViewModel: WeatherDetailsViewModel by viewModels()
- //   val viewModel=WeatherDetailsViewModel()
-    //lateinit var addressState: MutableState<String>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationState:MutableState<Location>
    // var sharedPreferences=this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       var lat:Double=0.0
+       var lon:Double=0.0
+       val destination = intent?.getStringExtra("DESTINATION")
+       val latFromIntent = intent?.getDoubleExtra("LAT", 31.0797867)?:31.0797867
+       val lonFromIntent = intent?.getDoubleExtra("LON", 31.590905)?:31.590905
+
        sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
        //val savedLanguage = sharedPreferences.getString("lang", "en") ?: "en"
 
@@ -87,8 +90,14 @@ class MainActivity : ComponentActivity() {
              latitude = 31.0797867
              longitude = 31.590905
          }) }
-         var lat=locationState.value.latitude
-         var lon = locationState.value.longitude
+         if(destination!=null){
+             lat=latFromIntent
+             lon=lonFromIntent
+             Log.e("nnnnn", "This is a test log message!${latFromIntent }++++++++++ ${lonFromIntent} ")
+
+         }else{
+          lat=locationState.value.latitude
+          lon = locationState.value.longitude}
          Log.e("TestLog", "This is a test log message!${locationState.value.latitude }++++++++++ ${locationState.value.longitude} ")
         // addressState = remember { mutableStateOf("") }
 

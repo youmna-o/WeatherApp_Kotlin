@@ -83,8 +83,11 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
                 onClick = {
                     val reminderItem = ReminderItem(
                         time = calendar.timeInMillis,
-                        id = 200
-                    )
+                        id = 200,
+                        lat = 36.08725,
+                        lon = 4.45192,
+
+                        )
                     Log.d("ReminderTime", "Reminder set for: ${reminderItem.time}")
                     notificationAlarmScheduler.schedule(reminderItem)
                 },colors =  ButtonDefaults.buttonColors(
