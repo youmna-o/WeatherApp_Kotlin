@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 abstract class Notifier(
+    //all types of notification will inherit from it
     private val notificationManager: NotificationManager,
     private val context :Context
 ) {
@@ -18,18 +19,19 @@ abstract class Notifier(
     abstract val notificationChannelName: String
     abstract val notificationId: Int
 
-    fun showNotification(message: String) {
+    //if android 8 or higher first create channel
+    fun showNotification(message: String ,reminderItem: ReminderItem) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = createNotificationChannel()
             notificationManager.createNotificationChannel(channel)
         }
-        val notification = buildNotification(message)
+        val notification = buildNotification(message,reminderItem)
         notificationManager.notify(
             notificationId,
             notification
         )
     }
-
+    //create channel method
     @RequiresApi(Build.VERSION_CODES.O)
     open fun createNotificationChannel(): NotificationChannel {
         val soundUri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/raw/cinematic")
@@ -50,7 +52,7 @@ abstract class Notifier(
         }
     }
 
-    abstract fun buildNotification(message:String): Notification
+    abstract fun buildNotification(message:String,reminderItem: ReminderItem): Notification
 
     protected abstract fun getNotificationTitle(message:String): String
 

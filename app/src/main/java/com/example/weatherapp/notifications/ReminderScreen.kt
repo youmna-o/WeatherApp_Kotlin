@@ -57,6 +57,7 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     ).apply {
+        //to enable previous days
         datePicker.minDate = System.currentTimeMillis()
     }
 
@@ -82,7 +83,7 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
                 onClick = {
                     val reminderItem = ReminderItem(
                         time = calendar.timeInMillis,
-                        id = 10
+                        id = 200
                     )
                     Log.d("ReminderTime", "Reminder set for: ${reminderItem.time}")
                     notificationAlarmScheduler.schedule(reminderItem)

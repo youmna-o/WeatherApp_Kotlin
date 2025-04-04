@@ -9,33 +9,45 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.app.NotificationCompat
 import com.example.weatherapp.MainActivity
+import java.security.PrivateKey
 
 class RunnerNotifier(
     private val notificationManager: NotificationManager,
-    private val context: Context
+    private val context: Context,
 ) : Notifier(notificationManager,context) {
 
     override val notificationChannelId: String = "runner_channel_id"
     override val notificationChannelName: String = "Running Notification"
     override val notificationId: Int = 200
 
-    override fun buildNotification(message:String): Notification {
+    override fun buildNotification(message:String,reminderItem: ReminderItem): Notification {
         val fullScreenIntent = Intent(context, MainActivity::class.java)
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context, 0, fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+        val cancelIntent = Intent(context, AlarmReceiver::class.java).apply {
+            action="Cancel"
+            putExtra("REMINDER_ID", reminderItem.id)
+            putExtra("REMINDER_TIME", reminderItem.time)
+        }
+
+        val cancelPendingIntent = PendingIntent.getBroadcast(
+            context, reminderItem.id, cancelIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val soundUri = Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/raw/cinematic")
-
-
         return NotificationCompat.Builder(context, notificationChannelId)
             .setContentTitle(getNotificationTitle(message))
             .setContentText(getNotificationMessage(message))
+            .setSmallIcon(android.R.drawable.sym_def_app_icon)
             .setSmallIcon(android.R.drawable.btn_star)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(Notification.DEFAULT_ALL)
             .setSound(soundUri)
             .setAutoCancel(true)
+            .addAction(android.R.drawable.ic_menu_info_details,"Cancel",cancelPendingIntent)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .build()
     }
