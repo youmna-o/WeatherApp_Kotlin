@@ -21,66 +21,52 @@ fun MapSearchBar(
     modifier: Modifier = Modifier,
     onPlaceSelected: (String) -> Unit
 ) {
-    // Determine the appropriate text color based on the current theme
     val textColor = Color.White
 
-    // Use AndroidView to integrate an Android View (AutoCompleteTextView) into Jetpack Compose
     AndroidView(
         factory = { context ->
             AutoCompleteTextView(context).apply {
-                hint = "Search for a place" // Set the hint text for the search bar
+                hint = context.getString(com.example.weatherapp.R.string.search_for_a_place)
 
-                // Set the text color and hint text color based on the current theme
                 setTextColor(textColor.toArgb())
-                setHintTextColor(textColor.copy(alpha = 0.6f).toArgb()) // Set hint text color with some transparency
+                setHintTextColor(textColor.copy(alpha = 0.6f).toArgb())
 
-                // Set the layout params to ensure the view takes up the full width
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
 
-                // Initialize the Places API and the Autocomplete Adapter
                 val autocompleteAdapter = ArrayAdapter<String>(context, R.layout.simple_dropdown_item_1line)
                 val placesClient = Places.createClient(context)
                 val autocompleteSessionToken = AutocompleteSessionToken.newInstance()
 
-                // Add a text change listener to capture and handle the user's input
                 addTextChangedListener { editable ->
-                    val query = editable?.toString() ?: "" // Get the user's input as a query string
+                    val query = editable?.toString() ?: ""
                     if (query.isNotEmpty()) {
-                        // Build a request to fetch autocomplete predictions based on the user's input
                         val request = FindAutocompletePredictionsRequest.builder()
                             .setSessionToken(autocompleteSessionToken)
                             .setQuery(query)
                             .build()
 
-                        // Fetch autocomplete predictions from the Places API
                         placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
-                            autocompleteAdapter.clear() // Clear the previous suggestions
+                            autocompleteAdapter.clear()
                             response.autocompletePredictions.forEach { prediction ->
-                                // Add each prediction to the adapter for displaying in the dropdown
                                 autocompleteAdapter.add(prediction.getFullText(null).toString())
                             }
-                            autocompleteAdapter.notifyDataSetChanged() // Notify the adapter to update the dropdown
+                            autocompleteAdapter.notifyDataSetChanged()
                         }
                     }
                 }
 
-                // Set the adapter to the AutoCompleteTextView to display suggestions
                 setAdapter(autocompleteAdapter)
-
-                // Set an item click listener to handle when the user selects a suggestion
                 setOnItemClickListener { _, _, position, _ ->
                     val selectedPlace = autocompleteAdapter.getItem(position) ?: return@setOnItemClickListener
-
-                    // Call the callback function to handle the selected place
                     onPlaceSelected(selectedPlace)
                 }
             }
         },
-        modifier = modifier // Apply the passed modifier to the AutoCompleteTextView
-            .fillMaxWidth() // Make sure the composable fills the maximum width available
-            .padding(16.dp) //  Add padding to the search bar
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     )
 }

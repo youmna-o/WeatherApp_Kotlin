@@ -116,7 +116,7 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                        Marker(
                            state = MarkerState(position = it),
                            title = "Your Location",
-                           snippet = "This is where you are currently located."
+                           snippet = "This is where you are currently located"
                        )
                    }
                }
@@ -128,19 +128,20 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                     .width(200.dp)
                     .height(50.dp)
                     .clickable() {
-                        editor.putString("locationMethod","Map").apply()
+                        editor.putString("locationMethod", "Map").apply()
                         lat = viewModel.userLocation.value?.latitude ?: 0.0
                         lon = viewModel.userLocation.value?.longitude ?: 0.0
-                        viewModel.updateMapLocation(lat,lon)
+                        viewModel.updateMapLocation(lat, lon)
                         navController.navigate("weather_screen/$lat/$lon")
                     }
                     .clip(RoundedCornerShape(16.dp)),
                 colors = CardDefaults.cardColors(
                     containerColor = myBlue
                 )){
-                Text("Get Weather", maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
-                    .padding( top = 8.dp)
-                    .fillMaxSize())
+                Text(
+                    stringResource(R.string.get_weather), maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxSize())
 
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -155,14 +156,20 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
                             showDialog = true
                         } else {
                             favViewModel.addFavCity(FavCity(addressState.value, lat, lon))
-                            Toast.makeText(context,"Added To Favorites",Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                     .clip(RoundedCornerShape(16.dp)),
                 colors = CardDefaults.cardColors(
                     containerColor = myBlue
                 )){
-                Text("Add To Favorites", maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier.padding( top = 8.dp).fillMaxWidth())
+                Text(
+                    stringResource(R.string.add_to_favorites), maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth())
 
             }
         }
@@ -190,8 +197,8 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
             AlertDialog(
                 containerColor = myPurple,
                 onDismissRequest = { showDialog = false },
-                title = { Text("Error") },
-                text = { Text("Location not found. Please select a valid location.") },
+                title = { Text(stringResource(R.string.error)) },
+                text = { Text(stringResource(R.string.location_not_found_please_select_a_valid_location)) },
                 confirmButton = {
                     Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
                         containerColor = myOrange,

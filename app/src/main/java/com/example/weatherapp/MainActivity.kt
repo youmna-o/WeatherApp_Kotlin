@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
@@ -33,7 +34,6 @@ import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.mainActivity.ShowNavBar
-import com.example.weatherapp.map.MapViewModel
 import com.example.weatherapp.notifications.NotificationAlarmScheduler
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.utils.ManifestUtils
@@ -67,21 +67,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
        var lat:Double=0.0
        var lon:Double=0.0
-       val destination = intent?.getStringExtra("DESTINATION")
+       var destination = intent?.getStringExtra("DESTINATION")
        val latFromIntent = intent?.getDoubleExtra("LAT", 31.0797867)?:31.0797867
        val lonFromIntent = intent?.getDoubleExtra("LON", 31.590905)?:31.590905
 
        sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
        //val savedLanguage = sharedPreferences.getString("lang", "en") ?: "en"
+       fun setAppLocale(context: Context, languageCode: String) {
+           val locale = Locale(languageCode)
+           Locale.setDefault(locale)
 
+           val config = Configuration()
+           config.setLocale(locale)
+
+           context.resources.updateConfiguration(config, context.resources.displayMetrics)
+       }
+       val appLang=sharedPreferences.getString("AppLanguage","en")?:"en"
+       //setAppLocale(this,appLang)
        val apiKey = ManifestUtils.getApiKeyFromManifest(this)
        // Initialize the Places API with the retrieved API key
        if (!Places.isInitialized() && apiKey != null) {
            Places.initialize(applicationContext, apiKey)
        }
-       if (currentLanguage == "ar") {
+      /* if (currentLanguage == "ar") {
            sharedPreferences.edit().putString("lang","ar").apply()
-       }
+       }*/
         setContent {
      WeatherAppTheme {
        //  Log.i("k", "onCreate: ${sharedPreferences.getString("lat","31.0797867")}")
@@ -93,14 +103,10 @@ class MainActivity : ComponentActivity() {
          if(destination!=null){
              lat=latFromIntent
              lon=lonFromIntent
-             Log.e("nnnnn", "This is a test log message!${latFromIntent }++++++++++ ${lonFromIntent} ")
-
+             destination=null
          }else{
           lat=locationState.value.latitude
           lon = locationState.value.longitude}
-         Log.e("TestLog", "This is a test log message!${locationState.value.latitude }++++++++++ ${locationState.value.longitude} ")
-        // addressState = remember { mutableStateOf("") }
-
          ShowNavBar(this, application = application,lat,lon,notificationAlarmScheduler)
 
      }

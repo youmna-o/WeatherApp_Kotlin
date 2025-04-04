@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.myPurple
 
 @Composable
@@ -71,7 +73,7 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
             containerColor = myPurple,
             contentColor = Color.White
         )) {
-            Text(text = "Pick to choose your alert time")
+            Text(text = stringResource(R.string.pick_to_choose_your_alert_time))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -95,7 +97,7 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "Set your alert")
+                Text(text = stringResource(R.string.set_your_alert))
             }
         }
     }

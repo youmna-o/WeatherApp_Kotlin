@@ -2,6 +2,7 @@ package com.example.weatherapp.weatherScreen
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
 import android.location.Geocoder
 import android.util.Log
 import androidx.compose.runtime.State
@@ -25,10 +26,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Locale
 
 class WeatherDetailsViewModel(private val repo: Repo,application: Application): ViewModel() {
     private val sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-
+  //  val appLang=sharedPreferences.getString("AppLanguage","en")?:"en"
     private val currentWeather: MutableStateFlow<Response<WeatherData>> = MutableStateFlow(Response.Loading())
     val weather: StateFlow<Response<WeatherData>> = currentWeather.asStateFlow()
     private val mutableForecast: MutableStateFlow<Response<ForecastData>> = MutableStateFlow(
@@ -86,6 +88,13 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
                 Timber.tag("MapScreen").e("No location found for the selected place.")
             }
         }
+    }
+    fun setAppLocale(context: Context, languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 
     fun setUserLocation(latLng: LatLng) {
