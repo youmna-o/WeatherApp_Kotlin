@@ -131,6 +131,8 @@ dependencies {
 
   // Google maps Compose
     implementation(libs.maps.compose)
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+
 
 
 

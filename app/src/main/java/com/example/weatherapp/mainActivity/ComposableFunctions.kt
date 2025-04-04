@@ -53,6 +53,7 @@ import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.settings.Settings
 import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
+import com.example.weatherapp.weatherScreen.SplashScreen
 import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.example.weatherapp.weatherScreen.myFactory
@@ -90,7 +91,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
             )
             NavHost(
                 navController = navController,
-                startDestination = Screen.Weather.rout,
+                startDestination = Screen.Splash.rout,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Settings.rout) { Settings(viewModel,navController) }
@@ -103,6 +104,15 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                 composable(Screen.Favourite.rout) { FavouritScreen(favViewModel=favViewModel,viewModel, navController = navController) }
                 composable(Screen.Notification.rout) { NotificationScreen(notificationAlarmScheduler) }
                 composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel) }
+                composable("splash") {
+                    SplashScreen {
+                        navController.navigate("weather_screen/{lat}/{lon}") {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    }
+                }
+
+
             }
         }
     }
