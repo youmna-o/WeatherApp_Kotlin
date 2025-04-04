@@ -20,12 +20,12 @@ abstract class Notifier(
     abstract val notificationId: Int
 
     //if android 8 or higher first create channel
-    fun showNotification(message: String ,reminderItem: ReminderItem) {
+    fun showNotification(title: String,describtion: String ,reminderItem: ReminderItem) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = createNotificationChannel()
             notificationManager.createNotificationChannel(channel)
         }
-        val notification = buildNotification(message,reminderItem)
+        val notification = buildNotification(title,describtion,reminderItem)
         notificationManager.notify(
             notificationId,
             notification
@@ -52,9 +52,9 @@ abstract class Notifier(
         }
     }
 
-    abstract fun buildNotification(message:String,reminderItem: ReminderItem): Notification
+    abstract fun buildNotification(title:String,describtion:String,reminderItem: ReminderItem): Notification
 
-    protected abstract fun getNotificationTitle(message:String): String
+    protected abstract fun getNotificationTitle(title: String): String
 
-    protected abstract fun getNotificationMessage(message:String): String
+    protected abstract fun getNotificationMessage(describtion:String): String
 }
