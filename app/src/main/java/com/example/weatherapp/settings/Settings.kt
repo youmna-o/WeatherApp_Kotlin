@@ -1,6 +1,7 @@
 package com.example.weatherapp.settings
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,11 +45,10 @@ import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 @Composable
 fun Settings(viewModel: WeatherDetailsViewModel,navController: NavController){
     val context= LocalContext.current
-     val sharedPreferences: SharedPreferences =
+    val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-    /*val latState by viewModel.lat.collectAsStateWithLifecycle()
-    val lonState by viewModel.lon.collectAsStateWithLifecycle()*/
+
     val locationState by viewModel.locationMethod.collectAsStateWithLifecycle()
     val langState by viewModel.lang.collectAsStateWithLifecycle()
     val selectedTemperature by viewModel.temp.collectAsStateWithLifecycle()

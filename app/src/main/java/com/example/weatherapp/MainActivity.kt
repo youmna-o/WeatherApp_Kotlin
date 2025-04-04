@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
         NotificationAlarmScheduler(this)
     }
     private lateinit var sharedPreferences: SharedPreferences
-    val currentLanguage = Locale.getDefault().language
+
     private val weatherViewModel: WeatherDetailsViewModel by viewModels()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationState:MutableState<Location>
@@ -70,20 +70,22 @@ class MainActivity : ComponentActivity() {
        var destination = intent?.getStringExtra("DESTINATION")
        val latFromIntent = intent?.getDoubleExtra("LAT", 31.0797867)?:31.0797867
        val lonFromIntent = intent?.getDoubleExtra("LON", 31.590905)?:31.590905
-
+       val currentLanguage = Locale.getDefault().language
        sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-       //val savedLanguage = sharedPreferences.getString("lang", "en") ?: "en"
+       if(currentLanguage=="ar"){
+           sharedPreferences.edit().putString("lang","ar").apply()
+       }
+       val savedLanguage = sharedPreferences.getString("lang", "en") ?: "en"
        fun setAppLocale(context: Context, languageCode: String) {
            val locale = Locale(languageCode)
            Locale.setDefault(locale)
-
            val config = Configuration()
            config.setLocale(locale)
-
            context.resources.updateConfiguration(config, context.resources.displayMetrics)
        }
-       val appLang=sharedPreferences.getString("AppLanguage","en")?:"en"
-       //setAppLocale(this,appLang)
+       setAppLocale(this,savedLanguage)
+       println(currentLanguage)
+       Log.i("TAG111", "onCreate: ${currentLanguage}")
        val apiKey = ManifestUtils.getApiKeyFromManifest(this)
        // Initialize the Places API with the retrieved API key
        if (!Places.isInitialized() && apiKey != null) {
