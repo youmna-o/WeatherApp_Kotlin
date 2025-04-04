@@ -60,6 +60,7 @@ fun Settings(viewModel: WeatherDetailsViewModel,navController: NavController){
     val savedWind = sharedPreferences.getString("wind","meter/sec") ?:"meter/sec"
     val savedMethod = sharedPreferences.getString("locationMethod","GPS")?:"GPS"
 
+
     val locationOptions = listOf("GPS", "Map")
     val lableLocation= stringResource(R.string.location)
     val languageOptions = listOf("en", "ar")
@@ -79,9 +80,9 @@ fun Settings(viewModel: WeatherDetailsViewModel,navController: NavController){
             editor.putString("lang",it)
             editor.apply()
             viewModel.setAppLocale(context,it)
-           /* navController.navigate("settings_screen") {
-                popUpTo("settings_screen") { inclusive = true }
-            }*/
+            navController.navigate("settings_screen") {
+                popUpTo("settings_screen") { inclusive = true }//to rebuild and delete old screen
+            }
             viewModel.updateParameters(locationState,it,selectedTemperature,selectedWind)
         },savedLanguage,navController)
         MenueCard(windOptions,lableWind,140,{
