@@ -95,25 +95,6 @@ class MainActivity : ComponentActivity() {
          ShowNavBar(this, application = application,lat,lon,notificationAlarmScheduler)
 
      }
-            /*  Box(
-           modifier = Modifier
-               .fillMaxSize()
-       ) {
-           //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
-           val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash2  ))
-           val progress by animateLottieCompositionAsState(
-               composition,
-               iterations = LottieConstants.IterateForever
-           )
-
-           LottieAnimation(
-               composition = composition,
-               progress = { progress },
-               modifier = Modifier.fillMaxSize(),
-               contentScale = ContentScale.FillBounds
-           )
-
-       }*/
 
      }
 
