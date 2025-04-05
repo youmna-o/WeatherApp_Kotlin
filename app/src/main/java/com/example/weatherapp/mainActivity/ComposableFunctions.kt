@@ -1,5 +1,6 @@
 package com.example.weatherapp.mainActivity
 
+import MapViewModel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
@@ -62,7 +63,7 @@ import com.example.weatherapp.weatherScreen.myFactory
 @SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,notificationAlarmScheduler: NotificationAlarmScheduler) {
+fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,notificationAlarmScheduler: NotificationAlarmScheduler,mapViewModel: MapViewModel) {
 
     val context= LocalContext.current
     val navController = rememberNavController()
@@ -103,9 +104,7 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                 }
                 composable(Screen.Favourite.rout) { FavouritScreen(favViewModel=favViewModel,viewModel, navController = navController) }
                 composable(Screen.Notification.rout) { NotificationScreen(notificationAlarmScheduler) }
-                composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel) }
-
-
+                composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel, mapViewModel = mapViewModel) }
 
             }
         }

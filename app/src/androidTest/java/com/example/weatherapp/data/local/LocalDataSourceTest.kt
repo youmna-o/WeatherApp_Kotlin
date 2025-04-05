@@ -1,11 +1,11 @@
 package com.example.weatherapp.data.local
-
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.example.weatherapp.data.model.FavCity
 import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
@@ -20,11 +20,9 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class LocalDataSourceTest{
-
     private  lateinit var dao: CityDao
     private lateinit var dataBase: CityDataBase
     private lateinit var cityLocalDataSource: CityLocalDataSource
-
     @Before
     fun setUp(){
         dataBase= Room.inMemoryDatabaseBuilder(
@@ -43,7 +41,7 @@ class LocalDataSourceTest{
         assertNotNull(insertedId)
         assertThat(insertedId, `is`(not(-1L)))
         val retrievedCities = dao.getAll().first()
-        assertThat(retrievedCities.isNotEmpty(), `is`(true))
+        assertTrue(retrievedCities.isNotEmpty())
         assertThat(retrievedCities.first().name, `is`("cairo"))
     }
     @Test
@@ -54,7 +52,8 @@ class LocalDataSourceTest{
         assertNotNull(result)
         assertThat(result, `is`(1))
         val citiesAfterDeletion = dao.getAll().first()
-        assertThat(citiesAfterDeletion.isEmpty(), `is`(true))
+        assertTrue(citiesAfterDeletion.isEmpty())
+
     }
 
 

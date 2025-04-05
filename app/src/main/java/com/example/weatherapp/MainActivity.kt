@@ -1,41 +1,32 @@
 package com.example.weatherapp
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
+import MapViewModel
+
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
+
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.weatherapp.data.model.ForecastData
-import com.example.weatherapp.data.model.WeatherData
-import com.example.weatherapp.data.repo.Repo
 import com.example.weatherapp.mainActivity.ShowNavBar
 import com.example.weatherapp.notifications.NotificationAlarmScheduler
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.utils.LocationUtils.checkedPermissions
+import com.example.weatherapp.utils.LocationUtils.enableLocationServices
+import com.example.weatherapp.utils.LocationUtils.isLocationEnabled
 import com.example.weatherapp.utils.ManifestUtils
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -45,23 +36,20 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.libraries.places.api.Places
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 const val REQUEST_LOCATION_CODE = 2005
+var permissionRequestCount = 0
 class MainActivity : ComponentActivity() {
    private val notificationAlarmScheduler by lazy {
         NotificationAlarmScheduler(this)
     }
     private lateinit var sharedPreferences: SharedPreferences
-
+    private val mapViewModel: MapViewModel by viewModels()
     private val weatherViewModel: WeatherDetailsViewModel by viewModels()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationState:MutableState<Location>
-   // var sharedPreferences=this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,13 +79,9 @@ class MainActivity : ComponentActivity() {
        if (!Places.isInitialized() && apiKey != null) {
            Places.initialize(applicationContext, apiKey)
        }
-      /* if (currentLanguage == "ar") {
-           sharedPreferences.edit().putString("lang","ar").apply()
-       }*/
+
         setContent {
      WeatherAppTheme {
-       //  Log.i("k", "onCreate: ${sharedPreferences.getString("lat","31.0797867")}")
-         val currentContext = LocalContext.current
          locationState= remember { mutableStateOf(Location(LocationManager.GPS_PROVIDER).apply {
              latitude = 31.0797867
              longitude = 31.590905
@@ -109,118 +93,77 @@ class MainActivity : ComponentActivity() {
          }else{
           lat=locationState.value.latitude
           lon = locationState.value.longitude}
-         ShowNavBar(this, application = application,lat,lon,notificationAlarmScheduler)
-
-     }
-
-     }
-
-
+         ShowNavBar(this, application = application,lat,lon,notificationAlarmScheduler, mapViewModel = mapViewModel) }
+        }
     }
     override fun onStart() {
         super.onStart()
-        if(checkPermission()){
-            if(isLocationEnabled()){
+        if(checkedPermissions(this)) {
+            if(isLocationEnabled(this)){
                 getFreshLocation()
             }else{
-                enableLocationSetting()
+                enableLocationServices(this)
             }
         }else{
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                REQUEST_LOCATION_CODE
-            )
-
-        }
-    }
-    //to handle every permission which accepted and which not
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-        deviceId: Int
-    ) {
-        //may have more than one permission
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
-        if(requestCode==REQUEST_LOCATION_CODE){
-            if(grantResults.get(0)== PackageManager.PERMISSION_GRANTED|| grantResults.get(1)== PackageManager.PERMISSION_GRANTED){
-                if(isLocationEnabled()){
-                    getFreshLocation()
-                }else{
-                    enableLocationSetting()
-                }
-            }
-        }
-    }
-    //must run time permission
-    fun checkPermission(): Boolean{
-        var result = false
-        if ((ContextCompat.checkSelfPermission(this,
-                ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED)
-            ||
-            (ContextCompat.checkSelfPermission(this,
-                ACCESS_FINE_LOCATION
-            ) ==  PackageManager.PERMISSION_GRANTED))
-        {
-            result  = true
-        }else{
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                    , android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
                 REQUEST_LOCATION_CODE
             )
         }
-        return result
     }
 
     @SuppressLint("MissingPermission")
-    fun  getFreshLocation(){
-        //fuse is my entry point to return the location
-        //listener to update location
-        fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this@MainActivity)
+    private fun getFreshLocation() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         fusedLocationProviderClient.requestLocationUpdates(
-            //take request and call back and lopper
             LocationRequest.Builder(0).apply {
                 setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             }.build(),
             object : LocationCallback(){
                 override fun onLocationResult(location: LocationResult) {
                     super.onLocationResult(location)
-                    val myLocation =location.lastLocation?: Location(LocationManager.GPS_PROVIDER)
-                    locationState.value=myLocation
-                   // weatherViewModel.updateCurrentLocation(myLocation.latitude,myLocation.longitude)
-                    //getAddress(myLocation)
+
+                    locationState.value = location.lastLocation?: Location(LocationManager.GPS_PROVIDER)
                 }
             },
             Looper.myLooper()
+
         )
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+        deviceId: Int
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+        if(requestCode == REQUEST_LOCATION_CODE){
+            if(grantResults.get(0) == PackageManager.PERMISSION_GRANTED
+                || grantResults.get(1) == PackageManager.PERMISSION_GRANTED){
 
-    fun enableLocationSetting(){//if user close location
-        Toast.makeText(this,"turn on location", Toast.LENGTH_LONG).show()
-        val intent= Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        startActivity(intent)
+                if(isLocationEnabled(this)){
+                    getFreshLocation()
+                }else{
+                    enableLocationServices(this)
+                }
+            }else{
+                //need update >> if user refused permissions
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                        , android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    ),
+                    REQUEST_LOCATION_CODE
+                )
+            }
+        }
     }
-    private fun isLocationEnabled():Boolean{ //if user open or close location
-        val locationManager: LocationManager =getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager
-            .isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        fusedLocationProviderClient.removeLocationUpdates(object : LocationCallback() {})
-    }
-
 
 }
 

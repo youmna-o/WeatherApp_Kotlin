@@ -1,5 +1,4 @@
 package com.example.weatherapp.notifications
-
 import android.icu.util.Calendar
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.foundation.layout.*
@@ -29,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
+import com.example.weatherapp.utils.NetworkUtils.isNetworkAvailable
 
 @Composable
 fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
@@ -127,9 +124,4 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
             }
         )
     }
-}
-fun isNetworkAvailable(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-    return activeNetwork?.isConnected == true
 }

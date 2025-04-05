@@ -29,6 +29,7 @@ import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.Response
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.utils.NetworkUtils.isNetworkAvailable
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -92,8 +93,3 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
     }
 }
 
-fun isNetworkAvailable(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-    return activeNetwork?.isConnected == true
-}
