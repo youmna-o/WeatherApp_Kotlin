@@ -46,5 +46,9 @@
     <string name="add_to_favorites">أضف إلى المفضلة</string>
     <string name="error">خطأ</string>
     <string name="location_not_found_please_select_a_valid_location">لم يتم العثور على الموقع. يرجى اختيار موقع صالح.</string>
+    <string name="warning">تحذير</string>
+    <string name="you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet">
+لا يمكنك ضبط إشعار بمعلومات الطقس المستقبلية بدون اتصال بالإنترنت
+</string>
 
 </resources>

@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.foundation.layout.*
@@ -24,12 +27,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.weatherapp.R
+import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
 
 @Composable
 fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
     val context = LocalContext.current
-
+    var showDialog by remember { mutableStateOf(false) }
     val calendar = remember { Calendar.getInstance() }
     val selectedTime = remember { mutableStateOf("") }
 
@@ -68,7 +72,13 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(onClick = { datePickerDialog.show() },
+        Button(onClick = {
+            if(isNetworkAvailable(context)){
+                    datePickerDialog.show()
+                }else{
+                showDialog = true
+                }
+             },
             colors =  ButtonDefaults.buttonColors(
             containerColor = myPurple,
             contentColor = Color.White
@@ -101,4 +111,25 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
             }
         }
     }
+    if (showDialog) {
+        AlertDialog(
+            containerColor = myPurple,
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.warning)) },
+            text = { Text(stringResource(R.string.you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet)) },
+            confirmButton = {
+                Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
+                    containerColor = myOrange,
+                    contentColor = Color.White
+                )) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+}
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+    return activeNetwork?.isConnected == true
 }

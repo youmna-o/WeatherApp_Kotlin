@@ -46,4 +46,6 @@
     <string name="add_to_favorites">Add To Favorites</string>
     <string name="error">Error</string>
     <string name="location_not_found_please_select_a_valid_location">Location not found. Please select a valid location.</string>
+    <string name="warning">Warning</string>
+    <string name="you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet">You can\'t set notification with future information about weather without with out internet</string>
 </resources>

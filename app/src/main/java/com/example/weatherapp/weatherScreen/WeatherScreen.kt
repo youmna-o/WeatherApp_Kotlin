@@ -1,6 +1,7 @@
 package com.example.weatherapp.weatherScreen
 
 
+import android.content.Context
 import android.os.Build
 
 import android.util.Log
@@ -40,10 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -58,34 +61,22 @@ import com.example.weatherapp.ui.theme.myPurple
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
+    val context = LocalContext.current
+     val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+     val unit=sharedPreferences.getString("unit","metric")
+    val symbole = when{
+        unit=="metric" -> "C"
+        unit =="imperial" ->"F"
+        else->"K"
+    }
     val showBottomSheet = remember { mutableStateOf(false) }
 
-    Box(
-       /* modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Blue)  */   ) {
-        /*Image(painter = painterResource(R.drawable.b1),
-            contentDescription = "nn",Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds)*/
-        //Image(painter = painterResource(R.drawable.background), contentDescription = "nn",Modifier.fillMaxWidth())
-       /* val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.back2  ))
-        val progress by animateLottieCompositionAsState(
-            composition,
-            iterations = LottieConstants.IterateForever
-        )
-
-        LottieAnimation(
-            composition = composition,
-            progress = { progress },
-            modifier = Modifier.fillMaxSize(),
-           // contentScale = ContentScale.FillBounds
-        )*/
-
+    Box {
         Column(
             modifier = Modifier.padding(all = 16.dp)
         ) {
             ToDayWeatherCard("${weatherData.name}", { BigIcon("${weatherData.weather[0].icon}") },
-                "${getCurrentDateTime()}", temp =TempFromKToC(weatherData.main?.temp), description ="${weatherData.weather[0].description}" )
+                "${getCurrentDateTime()}", temp =TempFromKToC(weatherData.main?.temp), description ="${weatherData.weather[0].description}",symbole )
             Spacer(modifier = Modifier.height(8.dp))
             ToDayDetailsCard(weatherData.main?.pressure, weatherData.main?.humidity, allClouds = weatherData.clouds?.all, speed = weatherData.wind?.speed )
 
@@ -97,6 +88,7 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
                         hour = "${item.dtTxt}",
                         icon = { MediumIcon("${item.weather[0].icon}") },
                         temp = TempFromKToC(item.main?.temp),
+                        symbole=symbole
 
                     )
                 }
@@ -121,14 +113,14 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
 
         }
         if (showBottomSheet.value) {
-            PartialBottomSheet(showBottomSheet,forecastData)
+            PartialBottomSheet(showBottomSheet,forecastData,symbole)
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ToDayWeatherCard( city: String,icon :@Composable  ()-> Unit, date:String,temp:Int,description:String,) {
+fun ToDayWeatherCard( city: String,icon :@Composable  ()-> Unit, date:String,temp:Int,description:String,symbole:String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,39 +133,55 @@ fun ToDayWeatherCard( city: String,icon :@Composable  ()-> Unit, date:String,tem
         ),
 
         ) {
-        Row ( modifier = Modifier
-            .padding(16.dp)
-            .padding(top = 24.dp),
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
-            ){
-            Column {
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = city,
                     fontSize = 28.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 icon()
             }
+
             Spacer(modifier = Modifier.width(8.dp))
-            Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
-                    text = getDayDate(date) ,
+                    text = getDayDate(date),
                     fontSize = 20.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = temp.toString()+ stringResource(R.string.c),
+                    text = "$temp$symbole",
                     fontSize = 40.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = description,
                     fontSize = 20.sp,
-                                  )
-
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
-
         }
+
 
     }
 }
@@ -215,7 +223,7 @@ fun MiniDetailsCard(text:String,id:Int,value: String){
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RestOfDay(hour : String, icon:@Composable () -> Unit,temp:Int) {
+fun RestOfDay(hour : String, icon:@Composable () -> Unit,temp:Int, symbole:String) {
     Card(
         modifier = Modifier
             .width(100.dp)
@@ -242,7 +250,7 @@ fun RestOfDay(hour : String, icon:@Composable () -> Unit,temp:Int) {
             Spacer(modifier = Modifier.width(8.dp))
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "${temp} ${stringResource(R.string.c)}",
+                text = "${temp} ${symbole}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -252,7 +260,7 @@ fun RestOfDay(hour : String, icon:@Composable () -> Unit,temp:Int) {
 }
 
 @Composable
-fun WeatherCard(label: String, value: Int?, description: String,icon:@Composable () -> Unit) {
+fun WeatherCard(label: String, value: Int?, description: String,icon:@Composable () -> Unit,symbole:String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -276,7 +284,7 @@ fun WeatherCard(label: String, value: Int?, description: String,icon:@Composable
         Spacer(modifier = Modifier.weight(1f))
         Row {
             Text(
-                text = value.toString() + "C",
+                text = value.toString() + symbole,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -290,7 +298,7 @@ fun WeatherCard(label: String, value: Int?, description: String,icon:@Composable
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NextDaysWeather(forecastList: List<forecastList>) {
+fun NextDaysWeather(forecastList: List<forecastList>,symbole:String) {
     Column {
         Text(
             text = stringResource(R.string.forecast_for_next_days),
@@ -305,7 +313,8 @@ fun NextDaysWeather(forecastList: List<forecastList>) {
                     label = getDayName("${weather.dtTxt}" ),
                     value = TempFromKToC(weather.main?.temp),
                     description = "${weather.weather[0].description}",
-                    icon = {WeatherIcon("${weather.weather[0].icon}") }
+                    icon = {WeatherIcon("${weather.weather[0].icon}") },
+                    symbole =symbole
                 )
             }
         }
@@ -315,7 +324,7 @@ fun NextDaysWeather(forecastList: List<forecastList>) {
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>, forecastList: List<forecastList>) {
+fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>, forecastList: List<forecastList>,symbole:String) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     if (showBottomSheet.value) {
@@ -337,7 +346,7 @@ fun PartialBottomSheet(showBottomSheet: MutableState<Boolean>, forecastList: Lis
                     contentScale = ContentScale.FillBounds
                 )*/
 
-                NextDaysWeather(forecastList)
+                NextDaysWeather(forecastList,symbole)
             }
         }
     }

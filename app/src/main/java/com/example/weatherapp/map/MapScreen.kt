@@ -7,6 +7,8 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -88,129 +91,135 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
     var city :String="address"
     var showDialog by remember { mutableStateOf(false) }
 
-
-
-
-
-    Column (modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-        MapSearchBar (
-            onPlaceSelected = { place ->
-                viewModel.selectLocation(place, context)
-            }
-        )
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(540.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            colors = CardDefaults.cardColors(
-                containerColor = myBlue
-            ),
-        ) {
-             GoogleMap(
-                   modifier = Modifier.fillMaxSize(),
-                           onMapClick = { latLng ->
-                          viewModel.setUserLocation(latLng) }
-               ){
-                   userLocation?.let {
-                       Marker(
-                           state = MarkerState(position = it),
-                           title = "Your Location",
-                           snippet = "This is where you are currently located"
-                       )
-                   }
-               }
-            }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
-            Card(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(50.dp)
-                    .clickable() {
-                        editor.putString("locationMethod", "Map").apply()
-                        lat = viewModel.userLocation.value?.latitude ?: 0.0
-                        lon = viewModel.userLocation.value?.longitude ?: 0.0
-                        viewModel.updateMapLocation(lat, lon)
-                        navController.navigate("weather_screen/$lat/$lon")
-                    }
-                    .clip(RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(
-                    containerColor = myBlue
-                )){
-                Text(
-                    stringResource(R.string.get_weather), maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxSize())
-
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Card(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(50.dp)
-                    .clickable() {
-                        lat = viewModel.userLocation.value?.latitude ?: 0.0
-                        lon = viewModel.userLocation.value?.longitude ?: 0.0
-                        if (addressState.value == "No country found") {
-                            showDialog = true
-                        } else {
-                            favViewModel.addFavCity(FavCity(addressState.value, lat, lon))
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                    .clip(RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(
-                    containerColor = myBlue
-                )){
-                Text(
-                    stringResource(R.string.add_to_favorites), maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth())
-
-            }
-        }
-
-        fun getAddress(context: Context ,lat:Double, lon:Double):String {
-            val addresses = Geocoder(context, Locale.getDefault())
-                .getFromLocation(lat, lon, 1)
-              city = addresses?.firstOrNull()?.locality ?: "No country found"
-            Log.e("Geocoder Error", "111${city}", )
-            println(city)
-            return city
-        }
-        LaunchedEffect(userLocation) {
-            userLocation?.let {
-                location ->
-                addressState.value="loading"
-                addressState.value= getAddress(context,location.latitude,location.longitude)
-                Log.e("Geocoder Error", "final ${addressState.value}", )
-
-
-            }
-
-        }
-        if (showDialog) {
-            AlertDialog(
-                containerColor = myPurple,
-                onDismissRequest = { showDialog = false },
-                title = { Text(stringResource(R.string.error)) },
-                text = { Text(stringResource(R.string.location_not_found_please_select_a_valid_location)) },
-                confirmButton = {
-                    Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
-                        containerColor = myOrange,
-                        contentColor = Color.White
-                    )) {
-                        Text("OK")
-                    }
+    if (isNetworkAvailable(context)){
+        Column (modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+            MapSearchBar (
+                onPlaceSelected = { place ->
+                    viewModel.selectLocation(place, context)
                 }
             )
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(540.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = myBlue
+                ),
+            ) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    onMapClick = { latLng ->
+                        viewModel.setUserLocation(latLng) }
+                ){
+                    userLocation?.let {
+                        Marker(
+                            state = MarkerState(position = it),
+                            title = "Your Location",
+                            snippet = "This is where you are currently located"
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Card(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(50.dp)
+                        .clickable() {
+                            editor.putString("locationMethod", "Map").apply()
+                            lat = viewModel.userLocation.value?.latitude ?: 0.0
+                            lon = viewModel.userLocation.value?.longitude ?: 0.0
+                            viewModel.updateMapLocation(lat, lon)
+                            navController.navigate("weather_screen/$lat/$lon")
+                        }
+                        .clip(RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(
+                        containerColor = myBlue
+                    )){
+                    Text(
+                        stringResource(R.string.get_weather), maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxSize())
+
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Card(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(50.dp)
+                        .clickable() {
+                            lat = viewModel.userLocation.value?.latitude ?: 0.0
+                            lon = viewModel.userLocation.value?.longitude ?: 0.0
+                            if (addressState.value == "No country found") {
+                                showDialog = true
+                            } else {
+                                favViewModel.addFavCity(FavCity(addressState.value, lat, lon))
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.added_to_favorites), Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                        .clip(RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(
+                        containerColor = myBlue
+                    )){
+                    Text(
+                        stringResource(R.string.add_to_favorites), maxLines = 1, fontSize = 20.sp,textAlign= TextAlign.Center, modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth())
+
+                }
+            }
+
+            fun getAddress(context: Context ,lat:Double, lon:Double):String {
+                val addresses = Geocoder(context, Locale.getDefault())
+                    .getFromLocation(lat, lon, 1)
+                city = addresses?.firstOrNull()?.locality ?: "No country found"
+                Log.e("Geocoder Error", "111${city}", )
+                println(city)
+                return city
+            }
+            LaunchedEffect(userLocation) {
+                userLocation?.let {
+                        location ->
+                    addressState.value="loading"
+                    addressState.value= getAddress(context,location.latitude,location.longitude)
+                    Log.e("Geocoder Error", "final ${addressState.value}", )
+
+
+                }
+
+            }
+            if (showDialog) {
+                AlertDialog(
+                    containerColor = myPurple,
+                    onDismissRequest = { showDialog = false },
+                    title = { Text(stringResource(R.string.warning)) },
+                    text = { Text(stringResource(R.string.location_not_found_please_select_a_valid_location)) },
+                    confirmButton = {
+                        Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
+                            containerColor = myOrange,
+                            contentColor = Color.White
+                        )) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
+
+        }
+    }else{
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Wait to connect the Internet")
+            CircularProgressIndicator()
         }
 
-                            }
+    }
+
+
     }
 
 
@@ -267,3 +276,8 @@ fun MapScreen(viewModel: WeatherDetailsViewModel,navController: NavController,fa
 
     viewModel.updateMapLocation(lat,lon)
 */
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+    return activeNetwork?.isConnected == true
+}

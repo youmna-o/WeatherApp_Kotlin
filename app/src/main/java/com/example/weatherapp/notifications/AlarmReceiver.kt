@@ -27,7 +27,6 @@ class AlarmReceiver : BroadcastReceiver() {
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.cancel(200)
             }
-
             "Snooze"->{
                 CoroutineScope(Dispatchers.IO).launch{
                      delay(50000)
@@ -37,7 +36,6 @@ class AlarmReceiver : BroadcastReceiver() {
             else ->{
                 sendNotification(context,reminderItem)
             }
-
         }
 
     }
@@ -63,5 +61,6 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
     }
+
 
 }
