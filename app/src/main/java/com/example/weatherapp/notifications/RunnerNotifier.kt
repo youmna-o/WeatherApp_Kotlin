@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.app.NotificationCompat
-import com.example.weatherapp.MainActivity
+import com.example.weatherapp.mainActivity.MainActivity
 
 class RunnerNotifier(
     private val notificationManager: NotificationManager,

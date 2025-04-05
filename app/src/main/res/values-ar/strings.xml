@@ -50,5 +50,7 @@
     <string name="you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet">
 لا يمكنك ضبط إشعار بمعلومات الطقس المستقبلية بدون اتصال بالإنترنت
 </string>
+    <string name="f">ف</string>
+    <string name="k">ك</string>
 
 </resources>

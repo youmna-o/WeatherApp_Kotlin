@@ -1,9 +1,7 @@
-package com.example.weatherapp
+package com.example.weatherapp.mainActivity
 import MapViewModel
-
 import android.annotation.SuppressLint
 import android.content.Context
-
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -21,7 +19,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
-import com.example.weatherapp.mainActivity.ShowNavBar
 import com.example.weatherapp.notifications.NotificationAlarmScheduler
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.example.weatherapp.utils.LocationUtils.checkedPermissions

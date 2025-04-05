@@ -57,9 +57,9 @@ fun WeatherScreen(weatherData: WeatherData,forecastData: List<forecastList>) {
      val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
      val unit=sharedPreferences.getString("unit","metric")
     val symbole = when{
-        unit=="metric" -> "C"
-        unit =="imperial" ->"F"
-        else->"K"
+        unit=="metric" -> stringResource(R.string.c)
+        unit =="imperial" -> stringResource(R.string.f)
+        else-> stringResource(R.string.k)
     }
     val showBottomSheet = remember { mutableStateOf(false) }
 

@@ -18,7 +18,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.weatherapp.MainActivity
+import com.example.weatherapp.mainActivity.MainActivity
 import com.example.weatherapp.R
 
 class MainActivity2 : ComponentActivity() {

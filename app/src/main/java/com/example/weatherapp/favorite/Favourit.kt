@@ -90,8 +90,6 @@ private fun getAllFavCities(favViewModel: FavViewModel,viewModel: WeatherDetails
         }
     }
 }
-
-
 @Composable
 fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: NavController,favViewModel: FavViewModel ) {
     var clicked by remember { mutableStateOf(false) }
@@ -127,10 +125,7 @@ fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: N
             )) {
                 Text(stringResource(R.string.remove))
             }
-
         }
-
-
     }
     if (clicked) {
         AlertDialog(
@@ -147,7 +142,6 @@ fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: N
                     )
                 ){
                     Text(stringResource(R.string.ok))
-
                 }
 
             },
@@ -157,8 +151,6 @@ fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: N
                     Text(stringResource(R.string.cancel))
                 }
             }
-
-
         )
     }
 }

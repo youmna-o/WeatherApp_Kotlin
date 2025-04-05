@@ -9,6 +9,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.weatherapp.data.repo.Repo
 import com.google.android.gms.maps.model.LatLng
 import io.mockk.mockk
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
@@ -34,7 +36,11 @@ class WeatherDetailsViewModelTest{
     fun setUserLocation_latLng_notNullLatLng() {
         val latLng = LatLng(30.0444, 31.2357)
         val result = viewModel.setUserLocation(latLng)
-        assertThat(result, `is`(not(nullValue())))
+        val lat=viewModel.userLocation.value?.latitude
+        val lon=viewModel.userLocation.value?.longitude
+        assertNotNull(result)
+        assertEquals(lat,latLng.latitude)
+        assertEquals(lon,latLng.longitude)
     }
     @Test
     fun getCurrentWeatherByCoord_latlonlangunit_weatherData(){
@@ -45,9 +51,10 @@ class WeatherDetailsViewModelTest{
         val result=viewModel.getCurrentWeatherByCoord(lat = lat,lon=lon,lang=lang,unit=unit)
         val temp=viewModel.temp
         val wind=viewModel.wind
-        assertThat(result, `is`(not(nullValue())))
-        assertThat(temp, `is`(not(nullValue())))
-        assertThat(wind, `is`(not(nullValue())))
+        assertNotNull(result)
+        assertNotNull(temp)
+        assertNotNull(wind)
+
     }
 
 

@@ -28,7 +28,7 @@ class WeatherRemoteDataSource(private  val service: WeatherServices,
                                                   lang: String,
                                                   unit: String
     ): Flow<WeatherData> {
-        return flow {
+        return flow  {
             val response = service.getWeatherByCoord(lat=lat,lon=lon,apiKey=apiKey,lang=lang,unit=unit)
             emit(response)
         }

@@ -36,8 +36,7 @@ class WeatherDetailsViewModel(private val repo: Repo,application: Application): 
     private val mutableForecast: MutableStateFlow<Response<ForecastData>> = MutableStateFlow(
         Response.Loading())
     val forecast: StateFlow<Response<ForecastData>> = mutableForecast.asStateFlow()
-    private val mutableMessage: MutableLiveData<String> = MutableLiveData()
-    val message: LiveData<String> =mutableMessage
+
 
 //show data of dikirnis hard code till currentlocation load
    private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
@@ -68,10 +67,6 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
     val unit : StateFlow<String> = defUnit.asStateFlow()
 
 
-    init {
-       // updateParameters(locationMethod.value,lang.value,temp.value,wind.value)
-        //updateCurrentLocation(lat.value,lon.value)
-    }
     fun selectLocation(selectedPlace: String, context: Context) {
         viewModelScope.launch {
             val geocoder = Geocoder(context)
@@ -132,7 +127,7 @@ private val defMapLat=MutableStateFlow<Double>(0.0)
             newTemp == "Fahrenheit" && newWind == "mile/h" -> "imperial"
             newTemp == "Celsius" && newWind == "meter/sec" -> "metric"
             newTemp == "Kelvin" -> ""
-            else -> "Celsius"
+            else -> "metric"
         }
         var newUnit= defUnit.value
         sharedPreferences.edit().putString("unit",newUnit).apply()

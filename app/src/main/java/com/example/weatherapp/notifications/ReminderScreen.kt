@@ -97,7 +97,6 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
                         lon = 4.45192,
 
                         )
-                    Log.d("ReminderTime", "Reminder set for: ${reminderItem.time}")
                     notificationAlarmScheduler.schedule(reminderItem)
                 },colors =  ButtonDefaults.buttonColors(
                     containerColor = myPurple,

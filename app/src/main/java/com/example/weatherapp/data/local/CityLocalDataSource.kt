@@ -10,7 +10,10 @@ class CityLocalDataSource (private val dao:CityDao) : ICityLocalDataSource {
     }
     override suspend fun insertCity(city: FavCity): Long {
         val result = dao.insertCity(city)
-        return if (result != -1L) result else -1L
+        return if (result != -1L)
+            result
+        else
+            -1L
     }
     override suspend fun delete(city: FavCity):Int{
         return if(city!=null)
