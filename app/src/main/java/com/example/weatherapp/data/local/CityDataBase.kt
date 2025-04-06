@@ -10,7 +10,7 @@ import com.example.weatherapp.data.model.FavCity
 @Database(entities = [FavCity::class] , version = 1)
 abstract class CityDataBase : RoomDatabase() {
     abstract fun getCityDao(): CityDao
-
+//instead of static
     companion object{
         @Volatile
         private var instanceOfDB : CityDataBase? = null

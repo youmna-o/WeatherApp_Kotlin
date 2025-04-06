@@ -1,5 +1,4 @@
 package com.example.weatherapp.notifications
-
 import android.icu.util.Calendar
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -11,29 +10,117 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import java.text.SimpleDateFormat
+import java.util.Locale
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.weatherapp.R
+import com.example.weatherapp.ui.theme.myOrange
+import com.example.weatherapp.ui.theme.myPurple
+import com.example.weatherapp.utils.NetworkUtils.isNetworkAvailable
 
 @Composable
 fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
     val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+    val calendar = remember { Calendar.getInstance() }
+    val selectedTime = remember { mutableStateOf("") }
+
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hour, minute ->
+            calendar.set(Calendar.HOUR_OF_DAY, hour)
+            calendar.set(Calendar.MINUTE, minute)
+            calendar.set(Calendar.SECOND, 0)
+
+            selectedTime.value = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        false
+    )
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, day ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, day)
+            timePickerDialog.show()
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).apply {
+        //to enable previous days
+        datePicker.minDate = System.currentTimeMillis()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(
-            onClick = {
-                val reminderItem = ReminderItem(
-                    time = Calendar.getInstance().apply {
-                        add(Calendar.SECOND, 10)
-                    }.timeInMillis,
-                    id = 10,
-                )
-                Log.d("ReminderTime", "Reminder set for: ${reminderItem.time}")
-                notificationAlarmScheduler.schedule(reminderItem)
-            }
-        ) {
-            Text(text = "Set Reminder (After 1 Min)")
+        Button(onClick = {
+            if(isNetworkAvailable(context)){
+                    datePickerDialog.show()
+                }else{
+                showDialog = true
+                }
+             },
+            colors =  ButtonDefaults.buttonColors(
+            containerColor = myPurple,
+            contentColor = Color.White
+        )) {
+            Text(text = stringResource(R.string.pick_to_choose_your_alert_time))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (selectedTime.value.isNotEmpty()) {
+            Text(text = " The latest alarm ${selectedTime.value}", fontSize = 18.sp)
+
+            Button(
+                onClick = {
+                    val reminderItem = ReminderItem(
+                        time = calendar.timeInMillis,
+                        id = 200,
+                        lat = 36.08725,
+                        lon = 4.45192,
+
+                        )
+                    notificationAlarmScheduler.schedule(reminderItem)
+                },colors =  ButtonDefaults.buttonColors(
+                    containerColor = myPurple,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = stringResource(R.string.set_your_alert))
+            }
+        }
+    }
+    if (showDialog) {
+        AlertDialog(
+            containerColor = myPurple,
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.warning)) },
+            text = { Text(stringResource(R.string.you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet)) },
+            confirmButton = {
+                Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
+                    containerColor = myOrange,
+                    contentColor = Color.White
+                )) {
+                    Text(stringResource(R.string.ok))
+                }
+            }
+        )
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">تطبيق الطقس</string>
+    <string name="app_name">بث السماء</string>
     <string name="title_activity_weather_details">تفاصيل الطقس</string>
     <string name="title_activity_weather_details_view_model">نموذج تفاصيل الطقس</string>
     <string name="title_activity_main2">النشاط الرئيسي 2</string>
@@ -32,4 +32,25 @@
     <string name="settings">الإعدادات</string>
     <string name="favourite">المفضلة</string>
     <string name="notification">الإشعارات</string>
+    <string name="delete">حذف</string>
+    <string name="do_you_want_to_remove_this_city_from_favorites">هل تريد إزالة هذه المدينة من المفضلة؟</string>
+    <string name="ok">موافق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="remove">إزالة</string>
+    <string name="set_your_alert">قم بضبط التنبيه</string>
+    <string name="pick_to_choose_your_alert_time">اختر لتحديد وقت التنبيه</string>
+    <string name="get_weather">احصل على الطقس</string>
+    <string name="no_country_found">لم يتم العثور على دولة</string>
+    <string name="added_to_favorites">تمت الإضافة إلى المفضلة</string>
+    <string name="search_for_a_place">ابحث عن مكان</string>
+    <string name="add_to_favorites">أضف إلى المفضلة</string>
+    <string name="error">خطأ</string>
+    <string name="location_not_found_please_select_a_valid_location">لم يتم العثور على الموقع. يرجى اختيار موقع صالح.</string>
+    <string name="warning">تحذير</string>
+    <string name="you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet">
+لا يمكنك ضبط إشعار بمعلومات الطقس المستقبلية بدون اتصال بالإنترنت
+</string>
+    <string name="f">ف</string>
+    <string name="k">ك</string>
+
 </resources>

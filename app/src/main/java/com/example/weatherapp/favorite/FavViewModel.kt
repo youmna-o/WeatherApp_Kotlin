@@ -1,6 +1,4 @@
 package com.example.weatherapp.favorite
-
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.Response
 import com.example.weatherapp.data.model.FavCity
 import com.example.weatherapp.data.repo.Repo
-import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +15,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class FavViewModel(private val repo:Repo):ViewModel() {
-
     private val mutableFavCity: MutableStateFlow<Response<List<FavCity>>> = MutableStateFlow(Response.Loading())
     val FavCiyt: StateFlow<Response<List<FavCity>>> = mutableFavCity.asStateFlow()
 
@@ -76,8 +72,10 @@ class FavViewModel(private val repo:Repo):ViewModel() {
 
     }
 }
+//must have the same param of view model
 class FavFactory(private val repo: Repo): ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        //create object of view model
         return FavViewModel(repo) as T
 
     }

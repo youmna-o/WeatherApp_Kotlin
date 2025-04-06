@@ -12,6 +12,8 @@ runtimeLivedata = "1.7.8"
 mapsCompose = "4.3.3"
 places = "3.5.0"
 playServicesMaps = "19.0.0"
+coreKtxVersion = "1.6.1"
+junitKtx = "1.2.1"
 
 
 
@@ -35,6 +37,8 @@ androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtim
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

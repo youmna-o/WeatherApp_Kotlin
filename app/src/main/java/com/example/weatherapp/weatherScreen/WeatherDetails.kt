@@ -1,34 +1,25 @@
 package com.example.weatherapp.weatherScreen
-
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Build
-import android.os.Bundle
-
-import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherapp.data.model.ForecastData
 import com.example.weatherapp.data.model.WeatherData
 import com.example.weatherapp.data.Response
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.utils.NetworkUtils.isNetworkAvailable
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -43,7 +34,6 @@ fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,c
                Text("Wait to connect the Internet")
                 CircularProgressIndicator()
             }
-
     }
     }
 }
@@ -52,6 +42,7 @@ fun WeatherDetailsScreen(viewModel: WeatherDetailsViewModel,currentLat:Double ,c
 @Composable
 private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsViewModel,currentLat:Double ,currentLon:Double) {
      val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    //turn it to state by (collectAsStateWithLifecycle()) to allow composable to deal with it(listen and re draw ui)
      val weatherState by viewModel.weather.collectAsStateWithLifecycle()
      val foreCastState by viewModel.forecast.collectAsStateWithLifecycle()
      val langState by viewModel.lang.collectAsStateWithLifecycle()
@@ -75,7 +66,6 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
                 CircularProgressIndicator()
             }
         }
-
         is Response.Success -> {
             val weather = (weatherState as Response.Success<WeatherData>).data
             val forecast = (foreCastState as? Response.Success<ForecastData>)?.data
@@ -92,8 +82,3 @@ private fun getWeatherAndForecast(context :Context,viewModel: WeatherDetailsView
     }
 }
 
-fun isNetworkAvailable(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-    return activeNetwork?.isConnected == true
-}

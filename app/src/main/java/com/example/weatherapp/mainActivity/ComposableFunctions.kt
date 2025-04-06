@@ -1,5 +1,5 @@
 package com.example.weatherapp.mainActivity
-
+import MapViewModel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
@@ -47,7 +47,6 @@ import com.example.weatherapp.favorite.FavFactory
 import com.example.weatherapp.favorite.FavViewModel
 import com.example.weatherapp.favorite.FavouritScreen
 import com.example.weatherapp.map.MapScreen
-import com.example.weatherapp.map.MapViewModel
 import com.example.weatherapp.notifications.NotificationAlarmScheduler
 import com.example.weatherapp.notifications.NotificationScreen
 import com.example.weatherapp.settings.Settings
@@ -61,17 +60,18 @@ import com.example.weatherapp.weatherScreen.myFactory
 @SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,notificationAlarmScheduler: NotificationAlarmScheduler) {
+fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:Double ,currentLon:Double,notificationAlarmScheduler: NotificationAlarmScheduler,mapViewModel: MapViewModel) {
     val context= LocalContext.current
     val navController = rememberNavController()
     val factory = myFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService),
         CityLocalDataSource(CityDataBase.getInstance(context).getCityDao())
     ),application)
+    val viewModel: WeatherDetailsViewModel = ViewModelProvider(activity, factory)
+        .get(WeatherDetailsViewModel::class.java)
+
     val favFactory = FavFactory(Repo(WeatherRemoteDataSource(RetrofitHeloer.apiService),
         CityLocalDataSource(CityDataBase.getInstance(context).getCityDao())
     ))
-    val viewModel: WeatherDetailsViewModel = ViewModelProvider(activity, factory)
-        .get(WeatherDetailsViewModel::class.java)
     val favViewModel:FavViewModel=ViewModelProvider(activity,favFactory).get(FavViewModel::class.java)
 
     Scaffold(
@@ -99,10 +99,10 @@ fun ShowNavBar(activity: ComponentActivity, application: Application,currentLat:
                     val lon = backStackEntry.arguments?.getString("lon")?.toDoubleOrNull() ?: currentLon
                     WeatherDetailsScreen(viewModel, lat, lon)
                 }
-               // composable(Screen.Weather.rout) { WeatherDetailsScreen(viewModel,currentLat,currentLon) }
                 composable(Screen.Favourite.rout) { FavouritScreen(favViewModel=favViewModel,viewModel, navController = navController) }
                 composable(Screen.Notification.rout) { NotificationScreen(notificationAlarmScheduler) }
-                composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel) }
+                composable(Screen.Map.rout) { MapScreen(viewModel,navController,favViewModel, mapViewModel = mapViewModel) }
+
             }
         }
     }
@@ -115,7 +115,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationItem(stringResource(R.string.settings), Icons.Default.Settings, Screen.Settings.rout),
         NavigationItem(stringResource(R.string.favourite), Icons.Default.Favorite, Screen.Favourite.rout),
         NavigationItem(stringResource(R.string.notification), Icons.Default.Notifications, Screen.Notification.rout),
-        NavigationItem("Map", Icons.Default.LocationOn, Screen.Map.rout) )
+        NavigationItem(stringResource(R.string.map), Icons.Default.LocationOn, Screen.Map.rout) )
 
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 

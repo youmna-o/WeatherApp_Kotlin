@@ -30,11 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.weatherapp.R
 import com.example.weatherapp.data.Response
 import com.example.weatherapp.data.model.FavCity
 import com.example.weatherapp.ui.theme.myOrange
@@ -88,8 +90,6 @@ private fun getAllFavCities(favViewModel: FavViewModel,viewModel: WeatherDetails
         }
     }
 }
-
-
 @Composable
 fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: NavController,favViewModel: FavViewModel ) {
     var clicked by remember { mutableStateOf(false) }
@@ -123,19 +123,16 @@ fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: N
                 containerColor = myPurple,
                 contentColor = Color.White
             )) {
-                Text("remove")
+                Text(stringResource(R.string.remove))
             }
-
         }
-
-
     }
     if (clicked) {
         AlertDialog(
             containerColor = myPurple,
             onDismissRequest = { clicked= false },
-            title = { Text("Delete") },
-            text = { Text("Do you want to remove this city from favorites") },
+            title = { Text(stringResource(R.string.delete)) },
+            text = { Text(stringResource(R.string.do_you_want_to_remove_this_city_from_favorites)) },
             confirmButton = {
                 Button(onClick = { clicked = false
                     favViewModel.deleteFavCity(city) },
@@ -144,19 +141,16 @@ fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: N
                         contentColor = Color.White
                     )
                 ){
-                    Text("Ok")
-
+                    Text(stringResource(R.string.ok))
                 }
 
             },
             dismissButton = {
                 Button(onClick = { clicked = false
                 }, ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
-
-
         )
     }
 }

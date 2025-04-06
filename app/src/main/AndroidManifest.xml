@@ -25,24 +25,20 @@
             android:value="AIzaSyBFLnnQm0pKJx8nWpa5C0qcc5BB1E7vwlw"/>
 
         <activity
-            android:name=".MainActivity2"
-            android:exported="false"
-            android:label="@string/title_activity_main2"
-            android:theme="@style/Theme.WeatherApp" />
-
-        <activity
-            android:name=".MainActivity"
+            android:name=".splash.MainActivity2"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.WeatherApp">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".mainActivity.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.WeatherApp" />
     </application>
 
 </manifest>
