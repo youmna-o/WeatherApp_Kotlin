@@ -1,5 +1,4 @@
 package com.example.weatherapp.notifications
-
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent

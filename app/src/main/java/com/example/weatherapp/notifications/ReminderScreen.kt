@@ -86,7 +86,7 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (selectedTime.value.isNotEmpty()) {
-            Text(text = " ${selectedTime.value}", fontSize = 18.sp)
+            Text(text = " The latest alarm ${selectedTime.value}", fontSize = 18.sp)
 
             Button(
                 onClick = {
@@ -118,7 +118,7 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
                     containerColor = myOrange,
                     contentColor = Color.White
                 )) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )

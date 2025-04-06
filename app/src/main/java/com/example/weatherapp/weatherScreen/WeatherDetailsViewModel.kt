@@ -30,31 +30,22 @@ import java.util.Locale
 
 class WeatherDetailsViewModel(private val repo: Repo,application: Application): ViewModel() {
     private val sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-  //  val appLang=sharedPreferences.getString("AppLanguage","en")?:"en"
     private val currentWeather: MutableStateFlow<Response<WeatherData>> = MutableStateFlow(Response.Loading())
     val weather: StateFlow<Response<WeatherData>> = currentWeather.asStateFlow()
     private val mutableForecast: MutableStateFlow<Response<ForecastData>> = MutableStateFlow(
         Response.Loading())
     val forecast: StateFlow<Response<ForecastData>> = mutableForecast.asStateFlow()
-
-
-//show data of dikirnis hard code till currentlocation load
+   //show data of dikirnis hard code till currentlocation load
    private val defLat=MutableStateFlow(sharedPreferences.getString("lat","31.0797867")?.toDouble()?:31.594271)
     val lat : StateFlow<Double> = defLat.asStateFlow()
     private val defLon=MutableStateFlow(sharedPreferences.getString("lon","31.590905")?.toDouble()?:31.590905)
     val lon: StateFlow<Double> = defLon.asStateFlow()
-// data of map
-private val _userLocation = mutableStateOf<LatLng?>(null)
+   // data of map
+    private val _userLocation = mutableStateOf<LatLng?>(null)
     val userLocation: State<LatLng?> = _userLocation
-    /*private val _selectedLocation = mutableStateOf<LatLng?>(null)
-    val selectedLocation: State<LatLng?> = _selectedLocation*/
-
-private val defMapLat=MutableStateFlow<Double>(0.0)
-    val maplat : StateFlow<Double> = defMapLat.asStateFlow()
+    private val defMapLat=MutableStateFlow<Double>(0.0)
     private val defMapLon=MutableStateFlow<Double>(0.0)
-    val maplon: StateFlow<Double> = defMapLon.asStateFlow()
-
-    /////////////////////////////////////////////////////// setting options:
+    //data of setting options:
     private val defLocationMethod=MutableStateFlow(sharedPreferences.getString("locationMethod","GPS")?:"GPS")
     val locationMethod : StateFlow<String> = defLocationMethod.asStateFlow()
     private val defLang=MutableStateFlow(sharedPreferences.getString("lang","en")?:"en")

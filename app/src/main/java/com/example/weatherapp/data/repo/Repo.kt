@@ -42,16 +42,5 @@ class Repo (private val remoteDataSource: IWeatherRemoteDataSource,
 
     }
 
-    companion object{
-        @Volatile
-        private var instance : Repo? = null
-        fun getInstance(remoteDataSource: WeatherRemoteDataSource,localDataSource: CityLocalDataSource): Repo {
-            return instance ?: synchronized(this){
-                val temp= Repo (remoteDataSource,localDataSource)
-                instance = temp
-                temp
-            }
 
-        }
-    }
 }

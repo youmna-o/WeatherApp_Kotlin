@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">تطبيق الطقس</string>
+    <string name="app_name">بث السماء</string>
     <string name="title_activity_weather_details">تفاصيل الطقس</string>
     <string name="title_activity_weather_details_view_model">نموذج تفاصيل الطقس</string>
     <string name="title_activity_main2">النشاط الرئيسي 2</string>

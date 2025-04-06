@@ -27,10 +27,8 @@ fun MapSearchBar(
         factory = { context ->
             AutoCompleteTextView(context).apply {
                 hint = context.getString(com.example.weatherapp.R.string.search_for_a_place)
-
                 setTextColor(textColor.toArgb())
                 setHintTextColor(textColor.copy(alpha = 0.6f).toArgb())
-
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
