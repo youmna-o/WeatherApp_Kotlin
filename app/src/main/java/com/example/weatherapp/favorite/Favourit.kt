@@ -1,8 +1,11 @@
 package com.example.weatherapp.favorite
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,17 +42,58 @@ import com.example.weatherapp.data.Response
 import com.example.weatherapp.data.model.FavCity
 import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
+import com.example.weatherapp.weatherScreen.WeatherDetailsScreen
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
 
-@Composable
-fun FavouritScreen(favViewModel: FavViewModel,viewModel: WeatherDetailsViewModel,navController: NavController){
+import androidx.activity.compose.BackHandler
 
-    getAllFavCities(favViewModel,viewModel,navController)
-}
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun getAllFavCities(favViewModel: FavViewModel,viewModel: WeatherDetailsViewModel,navController: NavController) {
+fun FavouritScreen(
+    favViewModel: FavViewModel,
+    viewModel: WeatherDetailsViewModel,
+    navController: NavController
+) {
+    var selectedCity by remember { mutableStateOf<FavCity?>(null) }
+
+    if (selectedCity != null) {
+        BackHandler {
+            selectedCity = null
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        selectedCity?.let { city ->
+            WeatherDetailsScreen(
+                viewModel = viewModel,
+                currentLat = city.lat,
+                currentLon = city.lon
+            )
+        }
+
+        getAllFavCities(
+            favViewModel = favViewModel,
+            viewModel = viewModel,
+            navController = navController
+        ) { clickedCity ->
+            selectedCity = clickedCity
+            viewModel.updateMapLocation(clickedCity.lat, clickedCity.lon)
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun getAllFavCities(
+    favViewModel: FavViewModel,
+    viewModel: WeatherDetailsViewModel,
+    navController: NavController,
+    onCityClicked: (FavCity) -> Unit
+) {
     val favCityState by favViewModel.FavCiyt.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
         favViewModel.getFavCities()
     }
@@ -68,17 +110,25 @@ private fun getAllFavCities(favViewModel: FavViewModel,viewModel: WeatherDetails
 
         is Response.Success<*> -> {
             val cities = (favCityState as Response.Success<List<FavCity>>).data
+
             LazyColumn(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 itemsIndexed(cities) { _, currentCity ->
-                    CityCard( currentCity, viewModel,navController,favViewModel )
+                    CityCard(
+                        city = currentCity,
+                        viewModel = viewModel,
+                        navController = navController,
+                        favViewModel = favViewModel,
+                        onClick = { onCityClicked(currentCity) }
+                    )
                 }
             }
         }
+
         is Response.Failure<*> -> {
             val errorMessage = (favCityState as Response.Failure<*>).error.message
             Box(
@@ -90,67 +140,78 @@ private fun getAllFavCities(favViewModel: FavViewModel,viewModel: WeatherDetails
         }
     }
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CityCard(city: FavCity , viewModel: WeatherDetailsViewModel,navController: NavController,favViewModel: FavViewModel ) {
-    var clicked by remember { mutableStateOf(false) }
+fun CityCard(
+    city: FavCity,
+    viewModel: WeatherDetailsViewModel,
+    navController: NavController,
+    favViewModel: FavViewModel,
+    onClick: () -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.3f)
-        ),
-
-        ) {
+        )
+    ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .clickable {
-                    viewModel.updateMapLocation(city.lat, city.lon)
-                    navController.navigate("weather_screen/${city.lat}/${city.lon}")
-                },
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = city.name,
-                fontSize = 28.sp,
+                fontSize = 20.sp,
             )
-            Spacer(Modifier.weight(1f))
-            Button({
-                clicked=true
-            },colors =  ButtonDefaults.buttonColors(
-                containerColor = myPurple,
-                contentColor = Color.White
-            )) {
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = { showDialog = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = myPurple,
+                    contentColor = Color.White
+                )
+            ) {
                 Text(stringResource(R.string.remove))
             }
         }
     }
-    if (clicked) {
+
+    if (showDialog) {
         AlertDialog(
             containerColor = myPurple,
-            onDismissRequest = { clicked= false },
+            onDismissRequest = { showDialog = false },
             title = { Text(stringResource(R.string.delete)) },
             text = { Text(stringResource(R.string.do_you_want_to_remove_this_city_from_favorites)) },
             confirmButton = {
-                Button(onClick = { clicked = false
-                    favViewModel.deleteFavCity(city) },
-                    colors =  ButtonDefaults.buttonColors(
+                Button(
+                    onClick = {
+                        showDialog = false
+                        favViewModel.deleteFavCity(city)
+                    },
+                    colors = ButtonDefaults.buttonColors(
                         containerColor = myOrange,
                         contentColor = Color.White
                     )
-                ){
+                ) {
                     Text(stringResource(R.string.ok))
                 }
-
             },
             dismissButton = {
-                Button(onClick = { clicked = false
-                }, ) {
+                Button(
+                    onClick = { showDialog = false }
+                ) {
                     Text(stringResource(R.string.cancel))
                 }
             }
         )
     }
 }
+
