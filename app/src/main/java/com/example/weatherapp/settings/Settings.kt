@@ -2,6 +2,7 @@ package com.example.weatherapp.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,6 +42,9 @@ import com.example.weatherapp.R
 import com.example.weatherapp.map.MapScreen
 import com.example.weatherapp.ui.theme.myBlue
 import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+
 
 
 @Composable
@@ -98,40 +103,72 @@ fun Settings(viewModel: WeatherDetailsViewModel,navController: NavController){
     }
 
 }
+
 @Composable
-fun RadioButtonSingleSelection(navController: NavController,modifier: Modifier = Modifier,radioOptions:List<String>,lable:String,action: (String) -> Unit,defultOption:String) {
-    val context= LocalContext.current
+fun RadioButtonSingleSelection(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    radioOptions: List<String>,
+    lable: String,
+    action: (String) -> Unit,
+    defultOption: String
+) {
+    val context = LocalContext.current
     val selectedOption = remember(defultOption) { mutableStateOf(defultOption) }
-    Column(modifier.selectableGroup()) {
-        radioOptions.forEach { text ->
-            val displayText = getDisplayText(context, text)
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    //to save my last choice in default value
-                    selected = (text == selectedOption.value),
-                    onClick ={
-                        selectedOption.value = text
-                        action(text)
-                        if(text=="Map"){
-                            navController.navigate("map")
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .selectableGroup(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = lable,
+            fontSize = 32.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            textAlign = TextAlign.Center
+        )
+
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            mainAxisSpacing = 12.dp,
+            crossAxisSpacing = 12.dp,
+            mainAxisAlignment = FlowMainAxisAlignment.Center
+        ) {
+            radioOptions.forEach { text ->
+                val displayText = getDisplayText(context, text)
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    RadioButton(
+                        selected = (text == selectedOption.value),
+                        onClick = {
+                            selectedOption.value = text
+                            action(text)
+                            if (text == "Map") {
+                                navController.navigate("map")
+                            }
                         }
-                    },
-                )
-                Text(
-                    text = displayText,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
+                    )
+                    Text(
+                        text = displayText,
+                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
             }
         }
     }
 }
+
+
 @Composable
 fun MenueCard(radioOptions:List<String>, lable:String, height:Int, action:  (String) -> Unit, defultOption: String,navController: NavController){
     Spacer(modifier = Modifier.height(4.dp))
@@ -145,7 +182,7 @@ fun MenueCard(radioOptions:List<String>, lable:String, height:Int, action:  (Str
         ),
         ) {
         Column (){
-            Text(lable, fontSize = 28.sp, modifier = Modifier.padding(start = 20.dp))
+           // Text(lable, fontSize = 28.sp, modifier = Modifier.padding(start = 20.dp),textAlign = TextAlign.Center)
             RadioButtonSingleSelection(radioOptions=radioOptions, lable = lable, action = action, defultOption = defultOption,  navController = navController)
         }
 

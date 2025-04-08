@@ -45,7 +45,7 @@ class LocalDataSourceTest{
         assertThat(retrievedCities.first().name, `is`("cairo"))
     }
     @Test
-    fun deleteCity_1() = runTest {
+    fun deleteCity_city_1() = runTest {
         val city = FavCity(name = "cairo")
         cityLocalDataSource.insertCity(city)
         val result = cityLocalDataSource.delete(city)

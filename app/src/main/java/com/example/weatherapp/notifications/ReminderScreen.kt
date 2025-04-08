@@ -12,27 +12,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.theme.myOrange
 import com.example.weatherapp.ui.theme.myPurple
 import com.example.weatherapp.utils.NetworkUtils.isNetworkAvailable
+import java.util.Date
 
 @Composable
 fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     val calendar = remember { Calendar.getInstance() }
-    val selectedTime = remember { mutableStateOf("") }
+
+    val reminderList = remember { mutableStateListOf<ReminderItem>() }
 
     val timePickerDialog = TimePickerDialog(
         context,
@@ -41,7 +52,14 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
             calendar.set(Calendar.MINUTE, minute)
             calendar.set(Calendar.SECOND, 0)
 
-            selectedTime.value = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+            val reminderItem = ReminderItem(
+                time = calendar.timeInMillis,
+                id = (calendar.timeInMillis % Int.MAX_VALUE).toInt(),
+                lat = 36.08725,
+                lon = 4.45192,
+            )
+            reminderList.add(reminderItem)
+            notificationAlarmScheduler.schedule(reminderItem)
         },
         calendar.get(Calendar.HOUR_OF_DAY),
         calendar.get(Calendar.MINUTE),
@@ -60,67 +78,94 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     ).apply {
-        //to enable previous days
         datePicker.minDate = System.currentTimeMillis()
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Button(onClick = {
-            if(isNetworkAvailable(context)){
-                    datePickerDialog.show()
-                }else{
-                showDialog = true
+        Card(
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .clickable() {
+                    if (isNetworkAvailable(context)) {
+                        datePickerDialog.show()
+                    } else {
+                        showDialog = true
+                    }
                 }
-             },
-            colors =  ButtonDefaults.buttonColors(
-            containerColor = myPurple,
-            contentColor = Color.White
-        )) {
-            Text(text = stringResource(R.string.pick_to_choose_your_alert_time))
+                .clip(RoundedCornerShape(16.dp)),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White.copy(alpha = 0.3f)
+            )){
+            Text(text = stringResource(R.string.pick_to_choose_your_alert_time), maxLines = 1,
+                fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp).fillMaxWidth())
+
         }
 
+
         Spacer(modifier = Modifier.height(16.dp))
-
-        if (selectedTime.value.isNotEmpty()) {
-            Text(text = " The latest alarm ${selectedTime.value}", fontSize = 18.sp)
-
-            Button(
-                onClick = {
-                    val reminderItem = ReminderItem(
-                        time = calendar.timeInMillis,
-                        id = 200,
-                        lat = 36.08725,
-                        lon = 4.45192,
-
-                        )
-                    notificationAlarmScheduler.schedule(reminderItem)
-                },colors =  ButtonDefaults.buttonColors(
-                    containerColor = myPurple,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = stringResource(R.string.set_your_alert))
+        LazyColumn {
+            items(reminderList) { item ->
+                ReminderListItem(item) {
+                    reminderList.remove(item)
+                    notificationAlarmScheduler.cancel(item)
+                }
             }
         }
     }
+
     if (showDialog) {
         AlertDialog(
             containerColor = myPurple,
             onDismissRequest = { showDialog = false },
             title = { Text(stringResource(R.string.warning)) },
-            text = { Text(stringResource(R.string.you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet)) },
+            text = {
+                Text(stringResource(R.string.you_can_t_set_notification_with_future_information_about_weather_without_with_out_internet))
+            },
             confirmButton = {
-                Button(onClick = { showDialog = false }, colors =  ButtonDefaults.buttonColors(
-                    containerColor = myOrange,
-                    contentColor = Color.White
-                )) {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = myOrange,
+                        contentColor = Color.White
+                    )
+                ) {
                     Text(stringResource(R.string.ok))
                 }
             }
         )
     }
+}
+@Composable
+fun ReminderListItem(item: ReminderItem, onDelete: () -> Unit) {
+    val formattedTime = SimpleDateFormat("dd MMM yyyy - hh:mm a", Locale.getDefault())
+        .format(Date(item.time))
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(16.dp)),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White.copy(alpha = 0.3f)
+        ),
+
+        ){
+        Row {
+            Text(text = formattedTime, fontSize = 16.sp, modifier = Modifier.padding(all = 16.dp))
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Reminder",
+                    tint = myPurple
+                )
+            }
+        }
+    }
+
 }

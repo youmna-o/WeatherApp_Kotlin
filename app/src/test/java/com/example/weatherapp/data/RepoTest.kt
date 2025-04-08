@@ -28,10 +28,10 @@ class RepoTest {
     }
 
     @Test
-    fun getFavCity_noInput_listOfFavCities()= runTest {
+    fun getCurrentWeather_cityLangUnit_sameData()= runTest {
      val result = repo.getCurrentWeather("Cairo","en","metric").first()
         assertEquals("Cairo", result.name)
-        result.main?.temp?.let { assertEquals( 299.57, it, 0.1) }
+        result.main?.temp?.let { assertEquals( 299.57, it ) }
         assertEquals("Clear", result.weather[0].main)
     }
     @Test
