@@ -47,6 +47,9 @@ import com.example.weatherapp.weatherScreen.WeatherDetailsViewModel
 
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.text.style.TextAlign
+import com.example.weatherapp.utils.NetworkUtils.isNetworkAvailable
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -110,23 +113,41 @@ private fun getAllFavCities(
 
         is Response.Success<*> -> {
             val cities = (favCityState as Response.Success<List<FavCity>>).data
+            Column {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(all = 16.dp)
+                        .clickable() {
+                            navController.navigate("map")
+                        }
+                        .clip(RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.3f)
+                    )){
+                    Text(text = stringResource(R.string.add_to_favorites),
+                        maxLines = 1, fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp).fillMaxWidth())
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                itemsIndexed(cities) { _, currentCity ->
-                    CityCard(
-                        city = currentCity,
-                        viewModel = viewModel,
-                        navController = navController,
-                        favViewModel = favViewModel,
-                        onClick = { onCityClicked(currentCity) }
-                    )
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    itemsIndexed(cities) { _, currentCity ->
+                        CityCard(
+                            city = currentCity,
+                            viewModel = viewModel,
+                            navController = navController,
+                            favViewModel = favViewModel,
+                            onClick = { onCityClicked(currentCity) }
+                        )
+                    }
                 }
             }
+
         }
 
         is Response.Failure<*> -> {

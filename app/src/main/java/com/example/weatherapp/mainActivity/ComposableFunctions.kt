@@ -115,8 +115,8 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationItem(stringResource(R.string.settings), Icons.Default.Settings, Screen.Settings.rout),
         NavigationItem(stringResource(R.string.favourite), Icons.Default.Favorite, Screen.Favourite.rout),
         NavigationItem(stringResource(R.string.notification), Icons.Default.Notifications, Screen.Notification.rout),
-        NavigationItem(stringResource(R.string.map), Icons.Default.LocationOn, Screen.Map.rout) )
-
+     //   NavigationItem(stringResource(R.string.map), Icons.Default.LocationOn, Screen.Map.rout)
+    )
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
     NavigationBar(

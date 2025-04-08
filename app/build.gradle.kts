@@ -133,6 +133,7 @@ dependencies {
     implementation(libs.maps.compose)
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
+    implementation( "com.google.accompanist:accompanist-flowlayout:0.28.0")
 
 
 

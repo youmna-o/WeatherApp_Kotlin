@@ -102,7 +102,8 @@ fun ReminderScreen(notificationAlarmScheduler: NotificationAlarmScheduler) {
             colors = CardDefaults.cardColors(
                 containerColor = Color.White.copy(alpha = 0.3f)
             )){
-            Text(text = stringResource(R.string.pick_to_choose_your_alert_time), maxLines = 1, fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp))
+            Text(text = stringResource(R.string.pick_to_choose_your_alert_time), maxLines = 1,
+                fontSize = 24.sp,textAlign= TextAlign.Center, modifier = Modifier.padding(start = 8.dp, top = 8.dp).fillMaxWidth())
 
         }
 

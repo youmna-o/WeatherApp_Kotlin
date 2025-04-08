@@ -53,8 +53,8 @@ class MainActivity : ComponentActivity() {
        var lat:Double=0.0
        var lon:Double=0.0
        var destination = intent?.getStringExtra("DESTINATION")
-       val latFromIntent = intent?.getDoubleExtra("LAT", 31.0797867)?:31.0797867
-       val lonFromIntent = intent?.getDoubleExtra("LON", 31.590905)?:31.590905
+       val latFromIntent = intent?.getDoubleExtra("LAT", 36.08725)?:36.08725
+       val lonFromIntent = intent?.getDoubleExtra("LON", 4.45192)?:4.45192
        val currentLanguage = Locale.getDefault().language
        sharedPreferences = application.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
        if(currentLanguage=="ar"){
@@ -80,8 +80,8 @@ class MainActivity : ComponentActivity() {
         setContent {
      WeatherAppTheme {
          locationState= remember { mutableStateOf(Location(LocationManager.GPS_PROVIDER).apply {
-             latitude = 31.0797867
-             longitude = 31.590905
+             latitude = 36.08725
+             longitude = 4.45192
          }) }
          if(destination!=null){
              lat=latFromIntent
